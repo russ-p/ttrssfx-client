@@ -148,7 +148,7 @@ public class TTRSSClient {
 	}
 
 	public String getIconURL(int id) {
-		return getApiUrl() + "/feed-icons/" + id + ".ico";
+		return loginData.getUrl() + "/feed-icons/" + id + ".ico";
 	}
 
 	public void updateArticle(int id, int mode, int field) {

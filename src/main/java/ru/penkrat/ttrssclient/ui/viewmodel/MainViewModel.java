@@ -249,4 +249,12 @@ public class MainViewModel implements ViewModel {
 		publish("showLoginDialog", loginData);
 	}
 
+	public String getIconUrl(CategoryFeedTreeItem catFeedItem) {
+		if (catFeedItem instanceof Feed) {
+			Feed feed = (Feed) catFeedItem;
+			return client.getIconURL(feed.getId());
+		}
+		return null;
+	}
+
 }

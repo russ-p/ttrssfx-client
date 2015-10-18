@@ -1,10 +1,15 @@
 package ru.penkrat.ttrssclient.ui.view;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
 
 import org.fxmisc.easybind.EasyBind;
 
@@ -20,15 +25,21 @@ import ru.penkrat.ttrssclient.ui.viewmodel.ArticleListItemViewModel;
 import ru.penkrat.ttrssclient.ui.viewmodel.MainViewModel;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.web.WebView;
+import net.sf.image4j.codec.ico.ICODecoder;
+import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 
 public class MainView implements FxmlView<MainViewModel>, Initializable {
@@ -100,8 +111,8 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 					List<TreeItem<CategoryFeedTreeItem>> list = c.getAddedSubList().stream()
 							.map(cat -> new TreeItem<CategoryFeedTreeItem>(cat)).peek(treeItem -> {
 						if (!treeItem.getValue().isLeaf()) {
-							ObservableList<TreeItem<CategoryFeedTreeItem>> chItems = EasyBind
-									.map(treeItem.getValue().getChildren(), TreeItem::new);
+							ObservableList<TreeItem<CategoryFeedTreeItem>> chItems = EasyBind.map(
+									treeItem.getValue().getChildren(), feed -> new TreeItem<>(feed, createIcon(feed)));
 							EasyBind.listBind(treeItem.getChildren(), chItems);
 						}
 					}).collect(Collectors.toList());
@@ -174,4 +185,32 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 		viewModel.login();
 	}
 
+	private Node createIcon(CategoryFeedTreeItem feedItem) {
+		ImageView imageView = new ImageView();
+		String url = viewModel.getIconUrl(feedItem);
+		if (url != null) {
+			Image image = getImage(url);
+			if (image != null)
+				imageView.setImage(image);
+		}
+		imageView.setFitWidth(16);
+		imageView.setFitHeight(16);
+		return imageView;
+	}
+
+	private Image getImage(String url) {
+		Image image = new Image(url, false);
+		if (image.getException() != null) {
+			try {
+				try (InputStream istream = new URL(url).openStream();) {
+					List<BufferedImage> images = ICODecoder.read(istream);
+					if (!images.isEmpty())
+						image = SwingFXUtils.toFXImage(images.get(0), new WritableImage(16, 16));
+				}
+			} catch (IOException e) {
+				// TODO:
+			}
+		}
+		return image;
+	}
 }
