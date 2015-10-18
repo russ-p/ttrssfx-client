@@ -4,6 +4,9 @@ import javax.json.JsonObject;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 public class Category implements CategoryFeedTreeItem {
 
 	private int id;
@@ -11,11 +14,13 @@ public class Category implements CategoryFeedTreeItem {
 	private int orderId;
 	private String title;
 
+	private ObservableList<CategoryFeedTreeItem> children = FXCollections.observableArrayList();
+
 	public Category(JsonValue value) {
 		// {"id":"1","title":"ЖЖ","unread":19,"order_id":3}
 		JsonObject obj = (JsonObject) value;
-		id = obj.get("id").getValueType() == ValueType.NUMBER ? obj.getInt("id") : Integer
-				.parseInt(obj.getString("id"));
+		id = obj.get("id").getValueType() == ValueType.NUMBER ? obj.getInt("id")
+				: Integer.parseInt(obj.getString("id"));
 		unread = obj.getInt("unread");
 		orderId = obj.getInt("order_id", Integer.MAX_VALUE);
 		title = obj.getString("title");
@@ -40,6 +45,16 @@ public class Category implements CategoryFeedTreeItem {
 	@Override
 	public String toString() {
 		return "Category [title=" + title + "]";
+	}
+
+	@Override
+	public boolean isLeaf() {
+		return false;
+	}
+
+	@Override
+	public ObservableList<CategoryFeedTreeItem> getChildren() {
+		return children;
 	}
 
 }

@@ -42,6 +42,24 @@ public class TTRSSClient {
 		return loginData.getUrl() + "/api/";
 	}
 
+	public String getSid() {
+		return sid;
+	}
+
+	public void setSid(String sid) {
+		this.sid = sid;
+	}
+
+	public boolean checkLogin() {
+		return httpclient.createRequest(getApiUrl())
+				.add("op", "getVersion") //
+				.add("sid", sid) // session_id
+				.exec()
+				.map(json -> json.getInt("status"))
+				.map(status -> status == 0)
+				.orElse(false);
+	}
+
 	public boolean login() {
 		if (loginData == null)
 			return false;
@@ -68,7 +86,7 @@ public class TTRSSClient {
 				.exec().ifPresent(json -> {
 					// TODO
 					// json.getJsonArray("content")
-					});
+				});
 	}
 
 	public List<Category> getCategories() {
@@ -118,13 +136,11 @@ public class TTRSSClient {
 	}
 
 	public Optional<JsonValue> getArticle(int id) {
-		return httpclient.createRequest(getApiUrl()).add("sid", sid)
-				.add("op", "getArticle")
-				.add("article_id", id)
+		return httpclient.createRequest(getApiUrl()).add("sid", sid).add("op", "getArticle").add("article_id", id)
 				.exec().map(js -> js.getJsonArray("content")).orElse(Json.createArrayBuilder().build()).stream()
 				.findFirst();
 	}
-	
+
 	public String getContent(Article article) {
 		if (article.getContent() == null)
 			getArticle(article.getId()).ifPresent(article::update);
