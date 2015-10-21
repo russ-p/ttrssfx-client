@@ -23,17 +23,20 @@ import ru.penkrat.ttrssclient.domain.LoginData;
 import ru.penkrat.ttrssclient.ui.LoginDialog;
 import ru.penkrat.ttrssclient.ui.viewmodel.ArticleListItemViewModel;
 import ru.penkrat.ttrssclient.ui.viewmodel.MainViewModel;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -60,6 +63,8 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 	MainViewModel viewModel;
 
 	private TreeItem<CategoryFeedTreeItem> treeRoot;
+
+	private ScrollBar articleViewScrollBar;
 
 	@FXML
 	Hyperlink link;
@@ -166,6 +171,12 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 			});
 			loginDialog.showAndWait().ifPresent(viewModel::acceptLoginData);
 		});
+
+		viewModel.getArticles().addListener((ListChangeListener<ArticleListItemViewModel>) c -> {
+			initScrolls();
+			int index = articleView.getSelectionModel().getSelectedIndex();
+			articleView.scrollTo(index);
+		});
 	}
 
 	private TreeItem<CategoryFeedTreeItem> findInTree(CategoryFeedTreeItem item, TreeItem<CategoryFeedTreeItem> root) {
@@ -212,5 +223,31 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 			}
 		}
 		return image;
+	}
+
+	private void initScrolls() {
+		if (articleViewScrollBar != null)
+			return;
+		articleViewScrollBar = getVerticalScrollbar(articleView);
+		articleViewScrollBar.valueProperty().addListener((ov, o, n) -> {
+			double value = n.doubleValue();
+			if (value == articleViewScrollBar.getMax()) {
+				articleViewScrollBar.setValue(95);
+				viewModel.preload();
+			}
+		});
+	}
+
+	private ScrollBar getVerticalScrollbar(Node table) {
+		ScrollBar result = null;
+		for (Node n : table.lookupAll(".scroll-bar")) {
+			if (n instanceof ScrollBar) {
+				ScrollBar bar = (ScrollBar) n;
+				if (bar.getOrientation().equals(Orientation.VERTICAL)) {
+					result = bar;
+				}
+			}
+		}
+		return result;
 	}
 }

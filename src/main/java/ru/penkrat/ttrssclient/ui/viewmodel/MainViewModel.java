@@ -119,8 +119,7 @@ public class MainViewModel implements ViewModel {
 				markAsReadService.restart(articleModel);
 
 				if (articles.indexOf(articleModel) + 1 >= articles.size()) {
-					loadAdditionalArticlesService.restart(((Feed) selectedCategoryOrFeed.getValue()).getId(),
-							articles.size());
+					preload();
 				}
 			}
 		});
@@ -255,6 +254,10 @@ public class MainViewModel implements ViewModel {
 			return client.getIconURL(feed.getId());
 		}
 		return null;
+	}
+
+	public void preload() {
+		loadAdditionalArticlesService.restart(((Feed) selectedCategoryOrFeed.getValue()).getId(), articles.size());
 	}
 
 }
