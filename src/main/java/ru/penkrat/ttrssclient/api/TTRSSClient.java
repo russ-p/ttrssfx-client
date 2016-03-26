@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.inject.Singleton;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonValue;
@@ -11,11 +12,13 @@ import javax.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import ru.penkrat.ttrssclient.domain.Article;
 import ru.penkrat.ttrssclient.domain.Category;
 import ru.penkrat.ttrssclient.domain.Feed;
 import ru.penkrat.ttrssclient.domain.LoginData;
 
+@Singleton
 public class TTRSSClient {
 
 	private static final Logger log = LoggerFactory.getLogger(TTRSSClient.class);

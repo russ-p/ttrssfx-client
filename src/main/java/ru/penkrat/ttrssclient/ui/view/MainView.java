@@ -45,9 +45,6 @@ import ru.penkrat.ttrssclient.ui.viewmodel.MainViewModel;
 public class MainView implements FxmlView<MainViewModel>, Initializable {
 
 	@FXML
-	TreeView<CategoryFeedTreeItem> treeView;
-
-	@FXML
 	Label statusLabel;
 
 	@FXML
@@ -58,8 +55,6 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 
 	@InjectViewModel
 	MainViewModel viewModel;
-
-	private TreeItem<CategoryFeedTreeItem> treeRoot;
 
 	private ScrollBar articleViewScrollBar;
 
@@ -78,69 +73,6 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		treeRoot = new TreeItem<CategoryFeedTreeItem>();
-		treeRoot.setExpanded(true);
-
-		treeView.setRoot(treeRoot);
-		treeView.setShowRoot(false);
-
-		treeView.setCellFactory(tree -> {
-			return new TreeCell<CategoryFeedTreeItem>() {
-				@Override
-				protected void updateItem(CategoryFeedTreeItem item, boolean empty) {
-					super.updateItem(item, empty);
-
-					if (empty || item == null) {
-						setText(null);
-						setGraphic(null);
-					} else {
-						setGraphic(getTreeItem().getGraphic());
-						if (item.getUnread() > 0) {
-							setText(item.getTitle() + " (" + item.getUnread() + ")");
-							getStyleClass().add("list-cell-bold");
-						} else {
-							setText(item.getTitle());
-							getStyleClass().remove("list-cell-bold");
-						}
-					}
-				}
-			};
-		});
-
-		viewModel.getRootItems().addListener((ListChangeListener<CategoryFeedTreeItem>) c -> {
-			while (c.next()) {
-				if (c.wasAdded()) {
-					List<TreeItem<CategoryFeedTreeItem>> list = c.getAddedSubList().stream()
-							.map(cat -> new TreeItem<CategoryFeedTreeItem>(cat)).peek(treeItem -> {
-						if (!treeItem.getValue().isLeaf()) {
-							ObservableList<TreeItem<CategoryFeedTreeItem>> chItems = EasyBind.map(
-									treeItem.getValue().getChildren(), feed -> new TreeItem<>(feed, createIcon(feed)));
-							EasyBind.listBind(treeItem.getChildren(), chItems);
-						}
-					}).collect(Collectors.toList());
-					treeRoot.getChildren().addAll(c.getFrom(), list);
-				}
-				if (c.wasRemoved()) {
-					c.getRemoved().stream().map((item) -> findInTree(item, treeRoot)).forEach(i -> {
-						treeRoot.getChildren().remove(i);
-					});
-				}
-			}
-		});
-
-		viewModel.selectedCategoryOrFeedProperty()
-				.bind(EasyBind.monadic(treeView.getSelectionModel().selectedItemProperty()).map(TreeItem::getValue));
-
-		EasyBind.subscribe(viewModel.selectedCategoryOrFeedProperty(), n -> {
-			TreeItem<CategoryFeedTreeItem> selected = findInTree(n, treeRoot);
-			if (selected != null) {
-				selected.setExpanded(true);
-				treeView.getSelectionModel().select(selected);
-			} else {
-				treeView.getSelectionModel().clearSelection();
-			}
-		});
-
 		articleView.itemsProperty().setValue(viewModel.getArticles());
 		viewModel.selectedArticleProperty().bind(articleView.getSelectionModel().selectedItemProperty());
 
@@ -191,35 +123,6 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 	@FXML
 	public void onLogin() {
 		viewModel.login();
-	}
-
-	private Node createIcon(CategoryFeedTreeItem feedItem) {
-		ImageView imageView = new ImageView();
-		String url = viewModel.getIconUrl(feedItem);
-		if (url != null) {
-			Image image = getImage(url);
-			if (image != null)
-				imageView.setImage(image);
-		}
-		imageView.setFitWidth(16);
-		imageView.setFitHeight(16);
-		return imageView;
-	}
-
-	private Image getImage(String url) {
-		Image image = new Image(url, false);
-		if (image.getException() != null) {
-			try {
-				try (InputStream istream = new URL(url).openStream();) {
-					List<BufferedImage> images = ICODecoder.read(istream);
-					if (!images.isEmpty())
-						image = SwingFXUtils.toFXImage(images.get(0), new WritableImage(16, 16));
-				}
-			} catch (IOException e) {
-				// TODO:
-			}
-		}
-		return image;
 	}
 
 	private void initScrolls() {

@@ -3,10 +3,13 @@ package ru.penkrat.ttrssclient.ui.viewmodel;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.Subscription;
 
 import de.saxsys.mvvmfx.ViewModel;
+import de.saxsys.mvvmfx.utils.notifications.NotificationCenterFactory;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,20 +19,17 @@ import javafx.collections.ObservableList;
 import ru.penkrat.ttrssclient.App;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
 import ru.penkrat.ttrssclient.domain.Article;
-import ru.penkrat.ttrssclient.domain.Category;
 import ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem;
 import ru.penkrat.ttrssclient.domain.Feed;
 import ru.penkrat.ttrssclient.domain.LoginData;
 import ru.penkrat.ttrssclient.service.generic.BiFunctionService;
 import ru.penkrat.ttrssclient.service.generic.FunctionService;
-import ru.penkrat.ttrssclient.service.generic.SupplierService;
 import ru.penkrat.ttrssclient.service.generic.delayed.DelayedConsumerService;
+import ru.penkrat.ttrssclient.ui.feedstree.FeedScope;
 
 public class MainViewModel implements ViewModel {
 
 	private StringProperty status = new SimpleStringProperty("");
-
-	private final ObjectProperty<CategoryFeedTreeItem> selectedCategoryOrFeed = new SimpleObjectProperty<>(null);
 
 	private final ObjectProperty<ArticleListItemViewModel> selectedArticle = new SimpleObjectProperty<>(null);
 
@@ -39,13 +39,7 @@ public class MainViewModel implements ViewModel {
 
 	private final StringProperty selectedArticleLink = new SimpleStringProperty();
 
-	private SupplierService<List<Category>> loadCategoriesService;
-
-	private final ObservableList<CategoryFeedTreeItem> rootItems = FXCollections.observableArrayList();
-
 	private final ObservableList<ArticleListItemViewModel> articles = FXCollections.observableArrayList();
-
-	private FunctionService<Integer, List<Feed>> loadFeedsService;
 
 	private BiFunctionService<Integer, Integer, List<Article>> loadArticlesService;
 
@@ -59,19 +53,12 @@ public class MainViewModel implements ViewModel {
 
 	private TTRSSClient client;
 
-	public MainViewModel() {
-		client = new TTRSSClient();
+	private ObjectProperty<Feed> selectedFeedProperty;
 
-		loadCategoriesService = new SupplierService<>(client::getCategories, "Загружаю категории");
-		loadCategoriesService.setOnSucceeded(t -> {
-			rootItems.setAll(loadCategoriesService.getValue());
-		});
-
-		loadFeedsService = new FunctionService<>(client::getFeeds, "Загружаю фиды…");
-		loadFeedsService.setOnSucceeded(t -> {
-			List<Feed> feeds = loadFeedsService.getValue();
-			getSelectedCategoryOrFeed().getChildren().setAll(feeds);
-		});
+	@Inject
+	public MainViewModel(TTRSSClient client, FeedScope feedScope) {
+		this.client = client;
+		selectedFeedProperty = feedScope.selectedFeedProperty();
 
 		loadArticlesService = new BiFunctionService<>(client::getHeadlines, "Загружаю статьи…");
 		loadArticlesService.setOnSucceeded(t -> {
@@ -79,15 +66,9 @@ public class MainViewModel implements ViewModel {
 					.collect(Collectors.toList()));
 		});
 
-		EasyBind.subscribe(selectedCategoryOrFeed, categoryOrFeed -> {
-			if (categoryOrFeed instanceof Category) {
-				if (categoryOrFeed.getChildren().isEmpty()) {
-					loadFeedsService.restart(((Category) categoryOrFeed).getId());
-				}
-			} else if (categoryOrFeed instanceof Feed) {
-				if (categoryOrFeed.getChildren().isEmpty()) {
-					loadArticlesService.restart(((Feed) categoryOrFeed).getId(), 0);
-				}
+		EasyBind.subscribe(selectedFeedProperty, feed -> {
+			if (feed != null) {
+				loadArticlesService.restart(feed.getId(), 0);
 			}
 		});
 
@@ -124,8 +105,7 @@ public class MainViewModel implements ViewModel {
 			}
 		});
 
-		status.bind(loadCategoriesService.messageProperty().concat(loadFeedsService.messageProperty())
-				.concat(loadArticlesService.messageProperty()));
+		status.bind(feedScope.loadingMessageProperty().concat(loadArticlesService.messageProperty()));
 
 		tryLogin();
 	}
@@ -140,23 +120,6 @@ public class MainViewModel implements ViewModel {
 
 	public final void setStatus(final java.lang.String status) {
 		this.statusProperty().set(status);
-	}
-
-	public ObservableList<CategoryFeedTreeItem> getRootItems() {
-		return rootItems;
-	}
-
-	public final ObjectProperty<CategoryFeedTreeItem> selectedCategoryOrFeedProperty() {
-		return this.selectedCategoryOrFeed;
-	}
-
-	public final ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem getSelectedCategoryOrFeed() {
-		return this.selectedCategoryOrFeedProperty().get();
-	}
-
-	public final void setSelectedCategoryOrFeed(
-			final ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem selectedCategoryOrFeed) {
-		this.selectedCategoryOrFeedProperty().set(selectedCategoryOrFeed);
 	}
 
 	public ObservableList<ArticleListItemViewModel> getArticles() {
@@ -209,7 +172,7 @@ public class MainViewModel implements ViewModel {
 	}
 
 	private void doUpdate() {
-		loadCategoriesService.restart();
+		NotificationCenterFactory.getNotificationCenter().publish("UPDATE");
 	}
 
 	public void update() {
@@ -257,7 +220,7 @@ public class MainViewModel implements ViewModel {
 	}
 
 	public void preload() {
-		loadAdditionalArticlesService.restart(((Feed) selectedCategoryOrFeed.getValue()).getId(), articles.size());
+		loadAdditionalArticlesService.restart(selectedFeedProperty.getValue().getId(), articles.size());
 	}
 
 }
