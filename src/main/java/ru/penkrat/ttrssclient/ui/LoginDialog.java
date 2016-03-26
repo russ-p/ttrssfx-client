@@ -4,6 +4,12 @@ import static impl.org.controlsfx.i18n.Localization.getString;
 
 import java.net.URL;
 
+import org.controlsfx.control.textfield.CustomPasswordField;
+import org.controlsfx.control.textfield.CustomTextField;
+import org.controlsfx.control.textfield.TextFields;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -17,13 +23,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-
-import org.controlsfx.control.textfield.CustomPasswordField;
-import org.controlsfx.control.textfield.CustomTextField;
-import org.controlsfx.control.textfield.TextFields;
-import org.controlsfx.validation.ValidationSupport;
-import org.controlsfx.validation.Validator;
-
 import ru.penkrat.ttrssclient.domain.LoginData;
 
 public class LoginDialog extends Dialog<LoginData> {

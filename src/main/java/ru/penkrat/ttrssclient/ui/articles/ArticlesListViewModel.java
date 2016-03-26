@@ -34,7 +34,9 @@ public class ArticlesListViewModel implements ViewModel {
 
 	private ObjectProperty<Feed> selectedFeedProperty;
 
-	Subscription articleSelectionSubscription;
+	Subscription articleSelectionSubscription; //f*ck GC
+
+	Subscription feedSubscription; //f*ck GC
 
 	@Inject
 	public ArticlesListViewModel(TTRSSClient client, FeedScope feedScope, ArticleScope articleScope) {
@@ -52,12 +54,6 @@ public class ArticlesListViewModel implements ViewModel {
 					.collect(Collectors.toList()));
 		});
 
-		EasyBind.subscribe(selectedFeedProperty, feed -> {
-			if (feed != null) {
-				loadArticlesService.restart(feed.getId(), 0);
-			}
-		});
-
 		markAsReadService = new DelayedConsumerService<>(articleModel -> {
 			client.updateArticle(articleModel.getArticle().getId(), 0, 2);
 			articleModel.getArticle().setUnread(false);
@@ -65,6 +61,12 @@ public class ArticlesListViewModel implements ViewModel {
 		} , "Как прочитано", 1000);
 		markAsReadService.setOnSucceeded(t -> {
 			// TODO:
+		});
+
+		feedSubscription = EasyBind.subscribe(selectedFeedProperty, feed -> {
+			if (feed != null) {
+				loadArticlesService.restart(feed.getId(), 0);
+			}
 		});
 
 		articleSelectionSubscription = EasyBind.subscribe(selectedArticle, articleModel -> {

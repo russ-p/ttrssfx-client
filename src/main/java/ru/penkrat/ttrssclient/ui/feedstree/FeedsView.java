@@ -27,7 +27,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import net.sf.image4j.codec.ico.ICODecoder;
 import ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem;
-import ru.penkrat.ttrssclient.ui.viewmodel.MainViewModel;
 
 public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 
@@ -63,7 +62,7 @@ public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 							getStyleClass().add("list-cell-bold");
 						} else {
 							setText(item.getTitle());
-							getStyleClass().remove("list-cell-bold");
+							getStyleClass().removeAll("list-cell-bold");
 						}
 					}
 				}
