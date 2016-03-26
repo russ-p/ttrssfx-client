@@ -6,7 +6,6 @@ import com.google.inject.Module;
 
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.guice.MvvmfxGuiceApplication;
-import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -18,11 +17,8 @@ public class App extends MvvmfxGuiceApplication {
 		launch(args);
 	}
 
-	private static App instance;
-
 	@Override
 	public void startMvvmfx(final Stage stage) throws Exception {
-		instance = this;
 		stage.setTitle("Tiny-Tiny RSS FX");
 
 		final Parent parent = FluentViewLoader.fxmlView(MainView.class).load().getView();
@@ -38,7 +34,4 @@ public class App extends MvvmfxGuiceApplication {
 	public void initGuiceModules(List<Module> modules) throws Exception {
 	}
 
-	public static Application getInstance() {
-		return instance;
-	}
 }

@@ -6,6 +6,7 @@ import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.Subscription;
 
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.HostServices;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import ru.penkrat.ttrssclient.App;
@@ -26,8 +27,12 @@ public class ArticleViewModel implements ViewModel {
 
 	Subscription articleSelectionSubscription;
 
+	private HostServices hostServices;
+
 	@Inject
-	public ArticleViewModel(TTRSSClient client, ArticleScope articleScope) {
+	public ArticleViewModel(TTRSSClient client, ArticleScope articleScope, HostServices hostServices) {
+		this.hostServices = hostServices;
+		
 		loadArticleContentService = new FunctionService<>(client::getContent);
 		loadArticleContentService.setOnSucceeded(t -> {
 			selectedArticleContent.set(loadArticleContentService.getValue());
@@ -56,6 +61,6 @@ public class ArticleViewModel implements ViewModel {
 
 	public void openInBrowser() {
 		if (selectedArticleLink.get() != null)
-			App.getInstance().getHostServices().showDocument(selectedArticleLink.get());
+			hostServices.showDocument(selectedArticleLink.get());
 	}
 }
