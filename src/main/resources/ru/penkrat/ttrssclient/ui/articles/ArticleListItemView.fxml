@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<HBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.penkrat.ttrssclient.ui.view.ArticleListItemView">
+<HBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.penkrat.ttrssclient.ui.articles.ArticleListItemView">
    <children>
 		<Label fx:id="title" maxWidth="1.7976931348623157E308" prefHeight="15.0" prefWidth="49.0" text="Title" wrapText="true" HBox.hgrow="ALWAYS">
          <HBox.margin>

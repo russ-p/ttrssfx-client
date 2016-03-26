@@ -1,4 +1,4 @@
-package ru.penkrat.ttrssclient.ui.viewmodel;
+package ru.penkrat.ttrssclient.ui.articles;
 
 import java.time.format.DateTimeFormatter;
 

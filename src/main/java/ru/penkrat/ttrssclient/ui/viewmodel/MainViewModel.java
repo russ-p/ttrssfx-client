@@ -1,8 +1,5 @@
 package ru.penkrat.ttrssclient.ui.viewmodel;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.inject.Inject;
 
 import org.fxmisc.easybind.EasyBind;
@@ -10,28 +7,19 @@ import org.fxmisc.easybind.Subscription;
 
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenterFactory;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import ru.penkrat.ttrssclient.App;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
 import ru.penkrat.ttrssclient.domain.Article;
-import ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem;
-import ru.penkrat.ttrssclient.domain.Feed;
 import ru.penkrat.ttrssclient.domain.LoginData;
-import ru.penkrat.ttrssclient.service.generic.BiFunctionService;
 import ru.penkrat.ttrssclient.service.generic.FunctionService;
-import ru.penkrat.ttrssclient.service.generic.delayed.DelayedConsumerService;
+import ru.penkrat.ttrssclient.ui.articles.ArticleScope;
 import ru.penkrat.ttrssclient.ui.feedstree.FeedScope;
 
 public class MainViewModel implements ViewModel {
 
 	private StringProperty status = new SimpleStringProperty("");
-
-	private final ObjectProperty<ArticleListItemViewModel> selectedArticle = new SimpleObjectProperty<>(null);
 
 	private final StringProperty selectedArticleContent = new SimpleStringProperty();
 
@@ -39,73 +27,30 @@ public class MainViewModel implements ViewModel {
 
 	private final StringProperty selectedArticleLink = new SimpleStringProperty();
 
-	private final ObservableList<ArticleListItemViewModel> articles = FXCollections.observableArrayList();
-
-	private BiFunctionService<Integer, Integer, List<Article>> loadArticlesService;
-
-	private FunctionService<Article, String> loadArticleContentService;
-
-	private DelayedConsumerService<ArticleListItemViewModel> markAsReadService;
-
-	private BiFunctionService<Integer, Integer, List<Article>> loadAdditionalArticlesService;
+	private final FunctionService<Article, String> loadArticleContentService;
 
 	Subscription articleSelectionSubscription;
 
-	private TTRSSClient client;
-
-	private ObjectProperty<Feed> selectedFeedProperty;
+	private final TTRSSClient client;
 
 	@Inject
-	public MainViewModel(TTRSSClient client, FeedScope feedScope) {
+	public MainViewModel(TTRSSClient client, FeedScope feedScope, ArticleScope articleScope) {
 		this.client = client;
-		selectedFeedProperty = feedScope.selectedFeedProperty();
-
-		loadArticlesService = new BiFunctionService<>(client::getHeadlines, "Загружаю статьи…");
-		loadArticlesService.setOnSucceeded(t -> {
-			articles.setAll(loadArticlesService.getValue().stream().map(ArticleListItemViewModel::new)
-					.collect(Collectors.toList()));
-		});
-
-		EasyBind.subscribe(selectedFeedProperty, feed -> {
-			if (feed != null) {
-				loadArticlesService.restart(feed.getId(), 0);
-			}
-		});
 
 		loadArticleContentService = new FunctionService<>(client::getContent);
 		loadArticleContentService.setOnSucceeded(t -> {
 			selectedArticleContent.set(loadArticleContentService.getValue());
 		});
-		markAsReadService = new DelayedConsumerService<>(articleModel -> {
-			client.updateArticle(articleModel.getArticle().getId(), 0, 2);
-			articleModel.getArticle().setUnread(false);
-			articleModel.unreadProperty().set(false);
-		} , "Как прочитано", 1000);
-		markAsReadService.setOnSucceeded(t -> {
-			// TODO:
-		});
 
-		loadAdditionalArticlesService = new BiFunctionService<>(client::getHeadlines, "Загружаю статьи…");
-		loadAdditionalArticlesService.setOnSucceeded(t -> {
-			articles.addAll(loadAdditionalArticlesService.getValue().stream().map(ArticleListItemViewModel::new)
-					.collect(Collectors.toList()));
-		});
-
-		articleSelectionSubscription = EasyBind.subscribe(selectedArticle, articleModel -> {
-			if (articleModel != null) {
-				Article article = articleModel.getArticle();
+		articleSelectionSubscription = EasyBind.subscribe(articleScope.selectedArticleProperty(), article -> {
+			if (article != null) {
 				loadArticleContentService.restart(article);
 				selectedArticleTitle.set(article.getTitle());
 				selectedArticleLink.set(article.getLink());
-				markAsReadService.restart(articleModel);
-
-				if (articles.indexOf(articleModel) + 1 >= articles.size()) {
-					preload();
-				}
 			}
 		});
 
-		status.bind(feedScope.loadingMessageProperty().concat(loadArticlesService.messageProperty()));
+		status.bind(feedScope.loadingMessageProperty().concat(articleScope.loadingListMessageProperty()));
 
 		tryLogin();
 	}
@@ -120,14 +65,6 @@ public class MainViewModel implements ViewModel {
 
 	public final void setStatus(final java.lang.String status) {
 		this.statusProperty().set(status);
-	}
-
-	public ObservableList<ArticleListItemViewModel> getArticles() {
-		return articles;
-	}
-
-	public final ObjectProperty<ArticleListItemViewModel> selectedArticleProperty() {
-		return this.selectedArticle;
 	}
 
 	public final StringProperty selectedArticleContentProperty() {
@@ -209,18 +146,6 @@ public class MainViewModel implements ViewModel {
 	public void login() {
 		LoginData loginData = LoginData.load();
 		publish("showLoginDialog", loginData);
-	}
-
-	public String getIconUrl(CategoryFeedTreeItem catFeedItem) {
-		if (catFeedItem instanceof Feed) {
-			Feed feed = (Feed) catFeedItem;
-			return client.getIconURL(feed.getId());
-		}
-		return null;
-	}
-
-	public void preload() {
-		loadAdditionalArticlesService.restart(selectedFeedProperty.getValue().getId(), articles.size());
 	}
 
 }

@@ -1,4 +1,4 @@
-package ru.penkrat.ttrssclient.ui.view;
+package ru.penkrat.ttrssclient.ui.articles;
 
 import org.fxmisc.easybind.EasyBind;
 
@@ -6,7 +6,6 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import ru.penkrat.ttrssclient.ui.viewmodel.ArticleListItemViewModel;
 
 public class ArticleListItemView implements FxmlView<ArticleListItemViewModel> {
 

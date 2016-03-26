@@ -1,5 +1,9 @@
 package ru.penkrat.ttrssclient;
 
+import java.util.List;
+
+import com.google.inject.Module;
+
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.guice.MvvmfxGuiceApplication;
 import javafx.application.Application;
@@ -28,6 +32,10 @@ public class App extends MvvmfxGuiceApplication {
 
 		stage.setScene(scene);
 		stage.show();
+	}
+
+	@Override
+	public void initGuiceModules(List<Module> modules) throws Exception {
 	}
 
 	public static Application getInstance() {
