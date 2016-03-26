@@ -1,13 +1,14 @@
 package ru.penkrat.ttrssclient;
 
 import de.saxsys.mvvmfx.FluentViewLoader;
+import de.saxsys.mvvmfx.guice.MvvmfxGuiceApplication;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ru.penkrat.ttrssclient.ui.view.MainView;
 
-public class App extends Application {
+public class App extends MvvmfxGuiceApplication {
 
 	public static void main(String... args) {
 		launch(args);
@@ -16,7 +17,7 @@ public class App extends Application {
 	private static App instance;
 
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void startMvvmfx(final Stage stage) throws Exception {
 		instance = this;
 		stage.setTitle("Tiny-Tiny RSS FX");
 
@@ -24,7 +25,7 @@ public class App extends Application {
 
 		Scene scene = new Scene(parent);
 		scene.getStylesheets().add("/styles/styles.css");
-		
+
 		stage.setScene(scene);
 		stage.show();
 	}
