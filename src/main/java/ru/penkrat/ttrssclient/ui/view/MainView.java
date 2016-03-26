@@ -9,8 +9,6 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import javax.imageio.ImageIO;
-
 import org.fxmisc.easybind.EasyBind;
 
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -18,32 +16,31 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
 import de.saxsys.mvvmfx.utils.viewlist.ViewListCellFactory;
-import ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem;
-import ru.penkrat.ttrssclient.domain.LoginData;
-import ru.penkrat.ttrssclient.ui.LoginDialog;
-import ru.penkrat.ttrssclient.ui.viewmodel.ArticleListItemViewModel;
-import ru.penkrat.ttrssclient.ui.viewmodel.MainViewModel;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
-import javafx.scene.control.TreeView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
+import javafx.scene.Node;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebView;
 import net.sf.image4j.codec.ico.ICODecoder;
-import javafx.scene.Node;
-import javafx.scene.control.Hyperlink;
+import ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem;
+import ru.penkrat.ttrssclient.domain.LoginData;
+import ru.penkrat.ttrssclient.ui.LoginDialog;
+import ru.penkrat.ttrssclient.ui.viewmodel.ArticleListItemViewModel;
+import ru.penkrat.ttrssclient.ui.viewmodel.MainViewModel;
 
 public class MainView implements FxmlView<MainViewModel>, Initializable {
 
@@ -249,5 +246,15 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 			}
 		}
 		return result;
+	}
+
+	@FXML
+	public void onPrev() {
+		articleView.getSelectionModel().selectPrevious();
+	}
+
+	@FXML
+	public void onNext() {
+		articleView.getSelectionModel().selectNext();
 	}
 }

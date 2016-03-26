@@ -13,6 +13,9 @@
         <items>
             <Button fx:id="updateButton" mnemonicParsing="false" onAction="#onUpdate" text="Update" />
             <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLogin" text="Login" />
+            <Pane prefHeight="28.0" prefWidth="233.0" />
+            <Button mnemonicParsing="false" onAction="#onPrev" text="Prev" />
+            <Button mnemonicParsing="false" onAction="#onNext" text="Next" />
         </items>
       </ToolBar>
       <SplitPane dividerPositions="0.25, 0.5" layoutX="149.0" layoutY="154.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
