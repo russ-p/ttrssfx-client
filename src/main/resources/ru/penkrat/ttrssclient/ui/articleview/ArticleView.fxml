@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.web.*?>
+<?import javafx.scene.control.*?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="155.0"
+	prefWidth="554.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+	fx:controller="ru.penkrat.ttrssclient.ui.articleview.ArticleView">
+	<children>
+		<WebView fx:id="webView" layoutX="124.0" layoutY="69.0"
+			maxHeight="-1.0" prefHeight="225.0" prefWidth="554.0"
+			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+			AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="18.0" />
+		<Hyperlink fx:id="link" layoutX="36.0" layoutY="14.0"
+			onAction="#onOpenLink" text="Hyperlink" AnchorPane.leftAnchor="0.0"
+			AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+	</children>
+</AnchorPane>
