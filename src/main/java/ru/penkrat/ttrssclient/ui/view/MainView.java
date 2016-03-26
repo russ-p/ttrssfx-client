@@ -15,7 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.web.WebView;
 import ru.penkrat.ttrssclient.domain.LoginData;
-import ru.penkrat.ttrssclient.ui.LoginDialog;
+import ru.penkrat.ttrssclient.ui.login.LoginDialog;
 import ru.penkrat.ttrssclient.ui.viewmodel.MainViewModel;
 
 public class MainView implements FxmlView<MainViewModel>, Initializable {

@@ -18,6 +18,7 @@ import ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem;
 import ru.penkrat.ttrssclient.domain.Feed;
 import ru.penkrat.ttrssclient.service.generic.FunctionService;
 import ru.penkrat.ttrssclient.service.generic.SupplierService;
+import ru.penkrat.ttrssclient.ui.login.LoginManager;
 
 public class FeedsViewModel implements ViewModel {
 
@@ -32,7 +33,7 @@ public class FeedsViewModel implements ViewModel {
 	private final ObservableList<CategoryFeedTreeItem> rootItems = FXCollections.observableArrayList();
 
 	@Inject
-	public FeedsViewModel(TTRSSClient client, FeedScope feedScope) {
+	public FeedsViewModel(TTRSSClient client, FeedScope feedScope, LoginManager loginManager) {
 		this.client = client;
 		loadCategoriesService = new SupplierService<>(client::getCategories, "Загружаю категории");
 		loadCategoriesService.setOnSucceeded(t -> {
@@ -60,6 +61,15 @@ public class FeedsViewModel implements ViewModel {
 		NotificationCenterFactory.getNotificationCenter().subscribe("UPDATE", (a, b) -> {
 			loadCategoriesService.restart();
 		});
+
+		loginManager.isLoggedInProperty().addListener((ov, o, n) -> {
+			if (n != null && n) {
+				loadCategoriesService.restart();
+			}
+		});
+		if (loginManager.isLoggedIn()) {
+			loadCategoriesService.restart();
+		}
 
 		feedScope.loadingMessageProperty()
 				.bind(loadCategoriesService.messageProperty().concat(loadFeedsService.messageProperty()));

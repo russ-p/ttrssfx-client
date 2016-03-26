@@ -1,4 +1,4 @@
-package ru.penkrat.ttrssclient.ui;
+package ru.penkrat.ttrssclient.ui.login;
 
 import static impl.org.controlsfx.i18n.Localization.getString;
 

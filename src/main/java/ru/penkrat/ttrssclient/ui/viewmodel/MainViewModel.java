@@ -16,6 +16,7 @@ import ru.penkrat.ttrssclient.domain.LoginData;
 import ru.penkrat.ttrssclient.service.generic.FunctionService;
 import ru.penkrat.ttrssclient.ui.articles.ArticleScope;
 import ru.penkrat.ttrssclient.ui.feedstree.FeedScope;
+import ru.penkrat.ttrssclient.ui.login.LoginManager;
 
 public class MainViewModel implements ViewModel {
 
@@ -31,11 +32,12 @@ public class MainViewModel implements ViewModel {
 
 	Subscription articleSelectionSubscription;
 
-	private final TTRSSClient client;
+	private LoginManager loginManager;
 
 	@Inject
-	public MainViewModel(TTRSSClient client, FeedScope feedScope, ArticleScope articleScope) {
-		this.client = client;
+	public MainViewModel(TTRSSClient client, FeedScope feedScope, ArticleScope articleScope,
+			LoginManager loginManager) {
+		this.loginManager = loginManager;
 
 		loadArticleContentService = new FunctionService<>(client::getContent);
 		loadArticleContentService.setOnSucceeded(t -> {
@@ -52,7 +54,7 @@ public class MainViewModel implements ViewModel {
 
 		status.bind(feedScope.loadingMessageProperty().concat(articleScope.loadingListMessageProperty()));
 
-		tryLogin();
+		loginManager.tryLoginWithSavedCredentionals();
 	}
 
 	public final StringProperty statusProperty() {
@@ -108,44 +110,25 @@ public class MainViewModel implements ViewModel {
 			App.getInstance().getHostServices().showDocument(getSelectedArticleLink());
 	}
 
-	private void doUpdate() {
-		NotificationCenterFactory.getNotificationCenter().publish("UPDATE");
-	}
-
 	public void update() {
-		LoginData loginData = LoginData.load();
-		client.setLoginData(loginData);
-		client.setSid(loginData.getSid());
-		if (client.checkLogin()) {
-			doUpdate();
+		if (loginManager.tryLoginWithSavedCredentionals()) {
+			NotificationCenterFactory.getNotificationCenter().publish("UPDATE");
 		} else {
-			publish("showLoginDialog", loginData);
-		}
-	}
-
-	private void tryLogin() {
-		LoginData loginData = LoginData.load();
-		client.setLoginData(loginData);
-		client.setSid(loginData.getSid());
-		if (client.checkLogin()) {
-			doUpdate();
+			publish("showLoginDialog", loginManager.getSavedLoginData());
 		}
 	}
 
 	public void acceptLoginData(LoginData loginData) {
-		loginData.setSid(client.getSid());
-		loginData.save();
-		doUpdate();
+		loginManager.acceptLoginData(loginData);
+		NotificationCenterFactory.getNotificationCenter().publish("UPDATE");
 	}
 
-	public Boolean checkLoginData(LoginData ld) {
-		client.setLoginData(ld);
-		return client.login();
+	public Boolean checkLoginData(LoginData loginData) {
+		return loginManager.checkLoginData(loginData);
 	}
 
 	public void login() {
-		LoginData loginData = LoginData.load();
-		publish("showLoginDialog", loginData);
+		publish("showLoginDialog", loginManager.getSavedLoginData());
 	}
 
 }
