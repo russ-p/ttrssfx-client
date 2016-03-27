@@ -7,6 +7,7 @@ import org.fxmisc.easybind.Subscription;
 
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.HostServices;
+import javafx.beans.binding.Binding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
@@ -16,7 +17,7 @@ import ru.penkrat.ttrssclient.ui.articles.ArticleScope;
 
 public class ArticleViewModel implements ViewModel {
 
-	private final StringProperty selectedArticleContent = new SimpleStringProperty();
+	private final Binding<String> selectedArticleContent;
 
 	private final StringProperty selectedArticleTitle = new SimpleStringProperty();
 
@@ -33,9 +34,7 @@ public class ArticleViewModel implements ViewModel {
 		this.hostServices = hostServices;
 		
 		loadArticleContentService = new FunctionService<>(client::getContent);
-		loadArticleContentService.setOnSucceeded(t -> {
-			selectedArticleContent.set(contentWrapper.wrap(loadArticleContentService.getValue()));
-		});
+		selectedArticleContent = contentWrapper.bind(loadArticleContentService.valueProperty());
 
 		articleSelectionSubscription = EasyBind.subscribe(articleScope.selectedArticleProperty(), article -> {
 			if (article != null) {
@@ -46,7 +45,7 @@ public class ArticleViewModel implements ViewModel {
 		});
 	}
 
-	public final StringProperty selectedArticleContentProperty() {
+	public final Binding<String> selectedArticleContentProperty() {
 		return this.selectedArticleContent;
 	}
 

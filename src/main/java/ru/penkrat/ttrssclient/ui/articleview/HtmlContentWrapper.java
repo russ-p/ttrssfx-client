@@ -4,7 +4,11 @@ import java.text.MessageFormat;
 
 import javax.inject.Singleton;
 
+import org.fxmisc.easybind.EasyBind;
+
+import javafx.beans.binding.Binding;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -14,7 +18,11 @@ public class HtmlContentWrapper {
 
 	public enum Font {
 		PT_SANS("PT Sans", "https://fonts.googleapis.com/css?family=PT+Sans&subset=latin,cyrillic"),
-		OPEN_SANS("Open Sans", "https://fonts.googleapis.com/css?family=Open+Sans&subset=latin,cyrillic");
+		OPEN_SANS("Open Sans", "https://fonts.googleapis.com/css?family=Open+Sans&subset=latin,cyrillic"),
+		UBUNTU("Ubuntu", "https://fonts.googleapis.com/css?family=Ubuntu&subset=latin,cyrillic"),
+		NOTO_SANS("Noto Sans", "https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,cyrillic"),
+		PHILOSOPHER("Philosopher", "https://fonts.googleapis.com/css?family=Philosopher:400,400italic,700,700italic&subset=latin,cyrillic"),
+		;
 
 		String name, link;
 
@@ -27,6 +35,8 @@ public class HtmlContentWrapper {
 			return name;
 		}
 	}
+
+	public static final String[] FONT_SIZES = new String[] { "13px", "15px", "18px" };
 
 	private static final String STYLES_PATTERN = "p '{'"
 			+ " display: block;"
@@ -46,9 +56,25 @@ public class HtmlContentWrapper {
 	private final StringProperty fontSize = new SimpleStringProperty("15px");
 
 	public String wrap(String content) {
+		return wrap(content, getFontFamily(), getFontSize());
+	}
+
+	public Binding<String> bind(ReadOnlyObjectProperty<String> contentProperty) {
+		return EasyBind.combine(contentProperty, fontFamily, fontSize,
+				(cntnt, fFamily, fSize) -> wrap(cntnt, fFamily, fSize));
+	}
+
+	public static String wrap(String content, Font fFamily, String fSize) {
+		if(content == null)
+			return "";
+		if(fFamily == null)
+			fFamily = Font.OPEN_SANS;
+		if(fSize == null){
+			fSize = "15px";
+		}
 		StringBuffer html = html(
-				head(link(getFontFamily().link)
-						.append(style(STYLES_FORMAT.format(new Object[] { getFontSize(), getFontFamily().name },
+				head(link(fFamily.link)
+						.append(style(STYLES_FORMAT.format(new Object[] { fSize, fFamily.name },
 								new StringBuffer(), null)))
 						.append(body(pIfAbsent(content)))));
 
