@@ -21,8 +21,9 @@ public class HtmlContentWrapper {
 		OPEN_SANS("Open Sans", "https://fonts.googleapis.com/css?family=Open+Sans&subset=latin,cyrillic"),
 		UBUNTU("Ubuntu", "https://fonts.googleapis.com/css?family=Ubuntu&subset=latin,cyrillic"),
 		NOTO_SANS("Noto Sans", "https://fonts.googleapis.com/css?family=Noto+Sans&subset=latin,cyrillic"),
-		PHILOSOPHER("Philosopher", "https://fonts.googleapis.com/css?family=Philosopher:400,400italic,700,700italic&subset=latin,cyrillic"),
-		;
+		PHILOSOPHER(
+				"Philosopher",
+				"https://fonts.googleapis.com/css?family=Philosopher:400,400italic,700,700italic&subset=latin,cyrillic"),;
 
 		String name, link;
 
@@ -38,16 +39,19 @@ public class HtmlContentWrapper {
 
 	public static final String[] FONT_SIZES = new String[] { "13px", "15px", "18px" };
 
-	private static final String STYLES_PATTERN = "p '{'"
+	private static final String STYLES_PATTERN = "body '{'"
+			+ " line-height: 1.5;"
+			+ " font-size: {0};"
+			+ " font-family: ''{1}'', sans-serif;"
+			+ " '}'\n"
+			+ "p '{'"
 			+ " display: block;"
 			+ " -webkit-margin-before: 1em;"
 			+ " -webkit-margin-after: 1em;"
 			+ " -webkit-margin-start: 0px;"
 			+ " -webkit-margin-end: 0px;   "
-			+ " line-height: 1.5;"
-			+ " font-size: {0};"
-			+ " font-family: ''{1}'', sans-serif;"
-			+ " '}'";
+			+ " '}'\n"
+			+ " img '{' max-width:98%; height: auto; '}'\n";
 
 	private static final MessageFormat STYLES_FORMAT = new MessageFormat(STYLES_PATTERN);
 
@@ -65,18 +69,18 @@ public class HtmlContentWrapper {
 	}
 
 	public static String wrap(String content, Font fFamily, String fSize) {
-		if(content == null)
+		if (content == null)
 			return "";
-		if(fFamily == null)
+		if (fFamily == null)
 			fFamily = Font.OPEN_SANS;
-		if(fSize == null){
+		if (fSize == null) {
 			fSize = "15px";
 		}
 		StringBuffer html = html(
 				head(link(fFamily.link)
 						.append(style(STYLES_FORMAT.format(new Object[] { fSize, fFamily.name },
 								new StringBuffer(), null)))
-						.append(body(pIfAbsent(content)))));
+						).append(body(div(pIfAbsent(content)))));
 
 		return html.toString();
 	}
@@ -93,9 +97,8 @@ public class HtmlContentWrapper {
 		return tag("<body>", content, "</body>");
 	}
 
-	@SuppressWarnings("unused")
-	private static String div(String content, String clazz) {
-		return "<div class=\"" + clazz + "\">" + content + "</div>";
+	private static StringBuffer div(StringBuffer content) {
+		return tag("<div>", content, "</div>");
 	}
 
 	private static StringBuffer html(StringBuffer content) {
