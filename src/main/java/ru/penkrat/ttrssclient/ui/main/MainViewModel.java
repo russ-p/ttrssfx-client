@@ -1,4 +1,4 @@
-package ru.penkrat.ttrssclient.ui.viewmodel;
+package ru.penkrat.ttrssclient.ui.main;
 
 import javax.inject.Inject;
 

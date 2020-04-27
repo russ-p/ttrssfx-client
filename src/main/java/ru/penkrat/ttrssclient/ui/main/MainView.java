@@ -1,4 +1,4 @@
-package ru.penkrat.ttrssclient.ui.view;
+package ru.penkrat.ttrssclient.ui.main;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -12,7 +12,6 @@ import javafx.scene.control.Label;
 import ru.penkrat.ttrssclient.domain.LoginData;
 import ru.penkrat.ttrssclient.ui.articleview.HtmlContentWrapper.Font;
 import ru.penkrat.ttrssclient.ui.login.LoginDialog;
-import ru.penkrat.ttrssclient.ui.viewmodel.MainViewModel;
 import javafx.scene.control.ChoiceBox;
 
 public class MainView implements FxmlView<MainViewModel>, Initializable {
