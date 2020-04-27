@@ -4,12 +4,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import org.fxmisc.easybind.EasyBind;
+import org.fxmisc.easybind.Subscription;
 
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -37,6 +39,8 @@ public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 	private FeedsViewModel viewModel;
 
 	private TreeItem<CategoryFeedTreeItem> treeRoot;
+	
+	private List<Subscription> subs = new ArrayList<>();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -73,11 +77,13 @@ public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 			while (c.next()) {
 				if (c.wasAdded()) {
 					List<TreeItem<CategoryFeedTreeItem>> list = c.getAddedSubList().stream()
-							.map(cat -> new TreeItem<CategoryFeedTreeItem>(cat)).peek(treeItem -> {
+							.map(cat -> new TreeItem<CategoryFeedTreeItem>(cat))
+							.peek(treeItem -> {
 						if (!treeItem.getValue().isLeaf()) {
 							ObservableList<TreeItem<CategoryFeedTreeItem>> chItems = EasyBind.map(
 									treeItem.getValue().getChildren(), feed -> new TreeItem<>(feed, createIcon(feed)));
-							EasyBind.listBind(treeItem.getChildren(), chItems);
+							Subscription s = EasyBind.listBind(treeItem.getChildren(), chItems);
+							subs.add(s);
 						}
 					}).collect(Collectors.toList());
 					treeRoot.getChildren().addAll(c.getFrom(), list);

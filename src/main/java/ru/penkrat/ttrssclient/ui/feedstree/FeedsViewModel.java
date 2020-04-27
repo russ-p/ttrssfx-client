@@ -33,11 +33,17 @@ public class FeedsViewModel implements ViewModel {
 	private final ObservableList<CategoryFeedTreeItem> rootItems = FXCollections.observableArrayList();
 
 	@Inject
-	public FeedsViewModel(TTRSSClient client, FeedScope feedScope, LoginManager loginManager) {
+	public FeedsViewModel(TTRSSClient client, FeedScope feedScope, LoginManager loginManager,
+			LoadFeedsTaskFactory loadFeedsTaskFactory) {
 		this.client = client;
 		loadCategoriesService = new SupplierService<>(client::getCategories, "Загружаю категории");
 		loadCategoriesService.setOnSucceeded(t -> {
 			rootItems.setAll(loadCategoriesService.getValue());
+			loadCategoriesService.getValue().parallelStream()
+				.forEach(task -> loadFeedsTaskFactory.runTask(task));
+		});
+		loadCategoriesService.setOnFailed(e -> {
+			loadCategoriesService.getException().printStackTrace();
 		});
 
 		loadFeedsService = new FunctionService<>(client::getFeeds, "Загружаю фиды…");
