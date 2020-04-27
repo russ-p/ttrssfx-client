@@ -15,7 +15,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ru.penkrat.ttrssclient.domain.Feed;
 import ru.penkrat.ttrssclient.ui.feedstree.FeedScope;
-import ru.penkrat.ttrssclient.ui.view.MainView;
+import ru.penkrat.ttrssclient.ui.main.MainView;
 
 public class App extends MvvmfxGuiceApplication {
 	
