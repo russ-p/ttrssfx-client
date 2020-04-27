@@ -21,7 +21,7 @@ public class Category implements CategoryFeedTreeItem {
 		JsonObject obj = (JsonObject) value;
 		id = obj.get("id").getValueType() == ValueType.NUMBER ? obj.getInt("id")
 				: Integer.parseInt(obj.getString("id"));
-		unread = obj.getInt("unread");
+		unread = Integer.parseInt( obj.getString("unread", "0") );
 		orderId = obj.getInt("order_id", Integer.MAX_VALUE);
 		title = obj.getString("title");
 	}

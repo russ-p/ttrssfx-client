@@ -14,6 +14,9 @@ public class Article {
 	private boolean unread;
 	private LocalDateTime updated;
 	private String link;
+	private String author;
+	private String feedTitle;
+	private String flavorImage;
 
 	public Article(JsonValue value) {
 		JsonObject obj = (JsonObject) value;
@@ -25,6 +28,9 @@ public class Article {
 
 		updated = LocalDateTime.ofEpochSecond(Long.valueOf(obj.getInt("updated")), 0, ZoneOffset.ofHours(0));
 		link = obj.getString("link");
+		setAuthor(obj.getString("author"));
+		setFeedTitle(obj.getString("feed_title"));
+		setFlavorImage(obj.getString("flavor_image", ""));
 	}
 
 	public String getContent() {
@@ -83,6 +89,30 @@ public class Article {
 	public void update(JsonValue value) {
 		JsonObject obj = (JsonObject) value;
 		content = obj.getString("content");
+	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public String getFeedTitle() {
+		return feedTitle;
+	}
+
+	public void setFeedTitle(String feedTitle) {
+		this.feedTitle = feedTitle;
+	}
+
+	public String getFlavorImage() {
+		return flavorImage;
+	}
+
+	public void setFlavorImage(String flavorImage) {
+		this.flavorImage = flavorImage;
 	}
 
 }
