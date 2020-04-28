@@ -19,6 +19,8 @@ public class ArticleListItemViewModel implements ViewModel {
 
 	private final ReadOnlyStringWrapper title = new ReadOnlyStringWrapper();
 
+	private final ReadOnlyStringWrapper feedTitle = new ReadOnlyStringWrapper();
+
 	private final StringProperty date = new SimpleStringProperty();
 
 	private final BooleanProperty unread = new SimpleBooleanProperty();
@@ -28,10 +30,15 @@ public class ArticleListItemViewModel implements ViewModel {
 		title.set(article.getTitle());
 		unread.set(article.isUnread());
 		date.set(dtf.format(article.getUpdated()));
+		feedTitle.set(article.getFeedTitle().toUpperCase());
 	}
 
 	public ObservableStringValue titleProperty() {
 		return title.getReadOnlyProperty();
+	}
+
+	public ObservableStringValue feedTitleProperty() {
+		return feedTitle.getReadOnlyProperty();
 	}
 
 	public Article getArticle() {

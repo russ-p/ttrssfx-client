@@ -15,6 +15,7 @@ public class Article {
 	private LocalDateTime updated;
 	private String link;
 	private String author;
+	private String feedId;
 	private String feedTitle;
 	private String flavorImage;
 
@@ -30,6 +31,7 @@ public class Article {
 		link = obj.getString("link");
 		setAuthor(obj.getString("author"));
 		setFeedTitle(obj.getString("feed_title"));
+		setFeedId(obj.getString("feed_id"));
 		setFlavorImage(obj.getString("flavor_image", ""));
 	}
 
@@ -113,6 +115,14 @@ public class Article {
 
 	public void setFlavorImage(String flavorImage) {
 		this.flavorImage = flavorImage;
+	}
+
+	public String getFeedId() {
+		return feedId;
+	}
+
+	public void setFeedId(String feedId) {
+		this.feedId = feedId;
 	}
 
 }
