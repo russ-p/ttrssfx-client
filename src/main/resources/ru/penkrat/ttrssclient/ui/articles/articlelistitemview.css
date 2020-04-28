@@ -5,3 +5,9 @@
 .list-cell-small {
 	-fx-font-size: 8.0px;
 }
+
+.list-cell-excerpt {
+	-fx-text-fill: grey;
+	-fx-font-size: 10px;
+	-fx-font-style: italic;
+}

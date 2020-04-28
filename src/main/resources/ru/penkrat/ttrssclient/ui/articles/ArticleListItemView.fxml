@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.penkrat.ttrssclient.ui.articles.ArticleListItemView">
+<BorderPane fx:id="rootPane" stylesheets="@articlelistitemview.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.penkrat.ttrssclient.ui.articles.ArticleListItemView">
    <top>
       <AnchorPane prefHeight="19.0" prefWidth="233.0" BorderPane.alignment="CENTER">
          <children>
@@ -16,13 +16,6 @@
          </children>
       </AnchorPane>
    </top>
-   <center>
-		<Label fx:id="title" alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="55.0" prefWidth="209.0" text="Title" wrapText="true" BorderPane.alignment="CENTER">
-         <padding>
-            <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-         </padding>
-      </Label>
-   </center>
    <left>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -34,4 +27,27 @@
          </children>
       </VBox>
    </left>
+   <center>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+      		<Label fx:id="title" alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="213.0" text="Title" wrapText="true">
+               <padding>
+                  <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+               </padding>
+            </Label>
+            <AnchorPane prefHeight="0.0" prefWidth="233.0">
+               <children>
+                  <Label fx:id="excerptLabel" prefHeight="16.0" prefWidth="214.0" styleClass="list-cell-excerpt" stylesheets="@articlelistitemview.css" text="excerpt text" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Label>
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
+   </center>
+   <right>
+      <ImageView fx:id="flavorImageView" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+   </right>
 </BorderPane>

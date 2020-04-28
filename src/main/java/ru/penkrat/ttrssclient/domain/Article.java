@@ -18,6 +18,7 @@ public class Article {
 	private String feedId;
 	private String feedTitle;
 	private String flavorImage;
+	private String excerpt;
 
 	public Article(JsonValue value) {
 		JsonObject obj = (JsonObject) value;
@@ -33,6 +34,7 @@ public class Article {
 		setFeedTitle(obj.getString("feed_title"));
 		setFeedId(obj.getString("feed_id"));
 		setFlavorImage(obj.getString("flavor_image", ""));
+		setExcerpt(obj.getString("excerpt", ""));
 	}
 
 	public String getContent() {
@@ -123,6 +125,14 @@ public class Article {
 
 	public void setFeedId(String feedId) {
 		this.feedId = feedId;
+	}
+
+	public String getExcerpt() {
+		return excerpt;
+	}
+
+	public void setExcerpt(String excerpt) {
+		this.excerpt = excerpt;
 	}
 
 }

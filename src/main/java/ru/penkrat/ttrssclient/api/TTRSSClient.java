@@ -53,13 +53,9 @@ public class TTRSSClient {
 	}
 
 	public boolean checkLogin() {
-		return httpclient.createRequest(getApiUrl())
-				.add("op", "getVersion") //
+		return httpclient.createRequest(getApiUrl()).add("op", "getVersion") //
 				.add("sid", sid) // session_id
-				.exec()
-				.map(json -> json.getInt("status"))
-				.map(status -> status == 0)
-				.orElse(false);
+				.exec().map(json -> json.getInt("status")).map(status -> status == 0).orElse(false);
 	}
 
 	public boolean login() {
@@ -122,7 +118,8 @@ public class TTRSSClient {
 				.add("skip", skip) //
 				.add("filter", "") //
 				.add("is_cat", "false") //
-				.add("show_excerpt", "false") //
+				.add("show_excerpt", "true") //
+				.add("excerpt_length", "256") // excerpt_length
 				.add("show_content", "false") //
 				.add("view_mode", "adaptive") //
 				.add("include_attachments", "false") //
@@ -150,6 +147,10 @@ public class TTRSSClient {
 	}
 
 	public String getIconURL(int id) {
+		return loginData.getUrl() + "/feed-icons/" + id + ".ico";
+	}
+
+	public String getIconURL(String id) {
 		return loginData.getUrl() + "/feed-icons/" + id + ".ico";
 	}
 
