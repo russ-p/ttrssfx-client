@@ -17,10 +17,8 @@
 			<items>
 				<Button fx:id="updateButton" mnemonicParsing="false" onAction="#onUpdate" text="Update" />
 				<Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLogin" text="Login" />
-				<Pane HBox.hgrow="ALWAYS" />
-            <ChoiceBox fx:id="themeBox" prefHeight="26.0" prefWidth="159.0" />
-				<ChoiceBox fx:id="familyBox" prefHeight="25.0" prefWidth="151.0" />
-				<ChoiceBox fx:id="sizeBox" prefHeight="25.0" prefWidth="96.0" />
+				<Button fx:id="settingsButton" mnemonicParsing="false" onAction="#onSettings" text="Settings" />
+				<Pane HBox.hgrow="ALWAYS" /> 
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="0.0" />
 				<Button mnemonicParsing="false" onAction="#onPrev" text="Prev" />
 				<Button mnemonicParsing="false" onAction="#onNext" text="Next" />

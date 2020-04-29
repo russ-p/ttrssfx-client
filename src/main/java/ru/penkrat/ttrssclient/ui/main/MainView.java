@@ -6,13 +6,13 @@ import java.util.ResourceBundle;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenterFactory;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import ru.penkrat.ttrssclient.domain.LoginData;
-import ru.penkrat.ttrssclient.ui.articleview.HtmlContentWrapper.Font;
+import ru.penkrat.ttrssclient.ui.Utils;
 import ru.penkrat.ttrssclient.ui.login.LoginDialog;
-import javafx.scene.control.ChoiceBox;
 
 public class MainView implements FxmlView<MainViewModel>, Initializable {
 
@@ -22,32 +22,9 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 	@InjectViewModel
 	MainViewModel viewModel;
 
-	@FXML
-	ChoiceBox<Font> familyBox;
-
-	@FXML
-	ChoiceBox<String> sizeBox;
-	
-	@FXML
-	ChoiceBox<String> themeBox;
-
-	@FXML
-	public void onUpdate() {
-		viewModel.update();
-	}
-
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		statusLabel.textProperty().bind(viewModel.statusProperty());
-
-		familyBox.getItems().setAll(viewModel.getFontFamilies());
-		familyBox.valueProperty().bindBidirectional(viewModel.fontFamilyProperty());
-
-		sizeBox.getItems().setAll(viewModel.getFontSizes());
-		sizeBox.valueProperty().bindBidirectional(viewModel.fontSizeProperty());
-		
-		themeBox.getItems().setAll(viewModel.getThemes());
-		themeBox.valueProperty().bindBidirectional(viewModel.themeProperty());
 
 		viewModel.subscribe("showLoginDialog", (key, payload) -> {
 			LoginData loginData = (LoginData) payload[0];
@@ -56,6 +33,11 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 			});
 			loginDialog.showAndWait().ifPresent(viewModel::acceptLoginData);
 		});
+	}
+
+	@FXML
+	public void onUpdate() {
+		viewModel.update();
 	}
 
 	@FXML
@@ -71,5 +53,10 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 	@FXML
 	public void onNext() {
 		NotificationCenterFactory.getNotificationCenter().publish("NEXT_ARTICLE");
+	}
+
+	@FXML
+	public void onSettings(ActionEvent event) {
+		NotificationCenterFactory.getNotificationCenter().publish("SHOW_SETTINGS", Utils.parentWindowFromEvent(event));
 	}
 }
