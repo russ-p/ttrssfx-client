@@ -27,6 +27,9 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 
 	@FXML
 	ChoiceBox<String> sizeBox;
+	
+	@FXML
+	ChoiceBox<String> themeBox;
 
 	@FXML
 	public void onUpdate() {
@@ -42,6 +45,9 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 
 		sizeBox.getItems().setAll(viewModel.getFontSizes());
 		sizeBox.valueProperty().bindBidirectional(viewModel.fontSizeProperty());
+		
+		themeBox.getItems().setAll(viewModel.getThemes());
+		themeBox.valueProperty().bindBidirectional(viewModel.themeProperty());
 
 		viewModel.subscribe("showLoginDialog", (key, payload) -> {
 			LoginData loginData = (LoginData) payload[0];

@@ -34,7 +34,7 @@ public class ArticleViewModel implements ViewModel {
 		this.hostServices = hostServices;
 		
 		loadArticleContentService = new FunctionService<>(client::getContent);
-		selectedArticleContent = contentWrapper.bind(loadArticleContentService.valueProperty());
+		selectedArticleContent = contentWrapper.bind(loadArticleContentService.valueProperty(), articleScope.selectedArticleProperty());
 
 		articleSelectionSubscription = EasyBind.subscribe(articleScope.selectedArticleProperty(), article -> {
 			if (article != null) {

@@ -145,7 +145,12 @@
 			<artifactId>image4j</artifactId>
 			<version>0.7</version>
 		</dependency>
-
+		
+		<dependency>
+		    <groupId>com.samskivert</groupId>
+		    <artifactId>jmustache</artifactId>
+		    <version>1.15</version>
+		</dependency>		
 
 	</dependencies>
 

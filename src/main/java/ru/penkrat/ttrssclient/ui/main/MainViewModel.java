@@ -28,6 +28,8 @@ public class MainViewModel implements ViewModel {
 
 	private final ObservableList<String> fontSizes = FXCollections.observableArrayList(HtmlContentWrapper.FONT_SIZES);
 
+	private final ObservableList<String> themes = FXCollections.observableArrayList(HtmlContentWrapper.THEMES);
+
 	@Inject
 	public MainViewModel(FeedScope feedScope, ArticleScope articleScope, LoginManager loginManager,
 			HtmlContentWrapper contentWrapper) {
@@ -49,12 +51,20 @@ public class MainViewModel implements ViewModel {
 		return contentWrapper.fontSizeProperty();
 	}
 
+	public final StringProperty themeProperty() {
+		return contentWrapper.themeProperty();
+	}
+
 	public ObservableList<Font> getFontFamilies() {
 		return fontFamilies;
 	}
 
 	public ObservableList<String> getFontSizes() {
 		return fontSizes;
+	}
+
+	public ObservableList<String> getThemes() {
+		return themes;
 	}
 
 	public void update() {

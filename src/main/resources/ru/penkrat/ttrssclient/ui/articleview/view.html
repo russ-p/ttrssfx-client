@@ -1,0 +1,174 @@
+<html>
+<head>
+	<link href='{{ fontFamily.link }}' rel='stylesheet' type='text/css'>
+	<style>
+		body {
+			line-height: 1.5;
+			font-family: "{{ fontFamily.name }}", sans-serif;
+		}
+		p {
+			display: block;
+			-webkit-margin-before: 1em;
+			-webkit-margin-after: 1em;
+			-webkit-margin-start: 0px;
+			-webkit-margin-end: 0px;
+		}
+		
+		img {
+			max-width: 98%;
+			height: auto;
+		}
+		
+ 		@media (min-width: 576px) {
+			 .container {
+			    max-width: 540px;
+			}
+		}
+		@media (min-width: 768px) {
+			 .container {
+			    max-width: 720px;
+			}
+			.title {
+				font-size: 3rem;
+			}	
+		}
+		@media (min-width: 992px) {
+			 .container {
+			    max-width: 960px;
+			}
+		}
+		@media (min-width: 1200px) {
+			 .container {
+			    max-width: 1140px;
+			}
+		}
+		 
+		.container {
+			width: 100%;
+		    padding-right: 15px;
+		    padding-left: 15px;
+		    margin-right: auto;
+		    margin-left: auto;
+		}
+		
+		.title {
+			font-size: 2.5rem;
+			margin-bottom: .25rem;
+		}
+		
+		.meta {
+			margin-top: 0;
+			margin-bottom: 1.25rem;
+		}
+		
+		.content {
+		    font-size: {{ fontSize }};
+		}
+		
+	/* 	LIGHT THEME */
+		
+		.light {
+			background-color: whitesmoke;
+			color: #222;
+		}
+		
+		.light a {
+			color: #0095dd;
+		}
+
+		.light .meta {
+			opacity: 0.3;
+		}	
+		
+	/* 	DARK THEME	 */
+		
+		.dark {
+			background-color: #333;
+			color: #eee;
+		}
+		
+		.dark a {
+			color: #0095dd;
+		}
+
+		.dark .meta {
+			opacity: 0.3;
+		}
+
+	/* 	SOLARIZED-THEME	 */
+		
+		.solarized {
+			background-color: #fdf6e3;
+			color: #657b83;
+		}
+		
+		.solarized a {
+			color: #586e75;
+		}
+
+		.solarized .meta {
+			color:  #93a1a1;
+		}
+			
+		
+	/* 	SOLARIZED-DARK THEME	 */
+		
+		.solarized-dark {
+			background-color: #002b36;
+			color: #839496;
+		}
+		
+		.solarized-dark a {
+			color: #93a1a1;
+		}
+
+		.solarized-dark .meta {
+			color: #586e75;
+		}
+				
+	/* 	DRACULA THEME	 */
+		
+		.dracula {
+			background-color: #282a36;
+			color: #f8f8f2;
+		}
+		
+		.dracula a {
+			color: #bd93f9;
+		}
+
+		.dracula .meta {
+			color: #6272a4;
+		}
+		
+		
+	</style>
+</head>
+
+<body class="{{ theme }}">
+
+<div class="container">
+
+<!-- 
+<h2 class="title"> Title </h2>
+<p class="meta" >meta meta</p>
+<p>Text <a href="github.com">link</a></p>
+ -->
+{{#article}}
+<div>
+	<h2 class="title"> {{ article.title }} </h2>
+	<p class="meta" >{{ articleUpdated }} {{ article.author }}</p>
+</div>
+{{/article}}
+
+<div class="content">
+ {{#content}}
+ {{{ content }}}
+ {{/content}}
+</div>
+
+</div>
+
+</body>
+
+</html>
