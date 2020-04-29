@@ -14,13 +14,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ru.penkrat.ttrssclient.domain.Feed;
+import ru.penkrat.ttrssclient.ui.StylesManager;
 import ru.penkrat.ttrssclient.ui.feedstree.FeedScope;
 import ru.penkrat.ttrssclient.ui.main.MainView;
 
 public class App extends MvvmfxGuiceApplication {
-	
+
 	@Inject
 	private FeedScope feedScope;
+
+	@Inject
+	private StylesManager stylesManager;
 
 	public static void main(String... args) {
 		launch(args);
@@ -36,8 +40,8 @@ public class App extends MvvmfxGuiceApplication {
 		final Parent parent = FluentViewLoader.fxmlView(MainView.class).load().getView();
 
 		Scene scene = new Scene(parent);
-		scene.getStylesheets().add("/styles/styles.css");
-		
+		stylesManager.registerScene(scene);
+
 		stage.setScene(scene);
 		stage.show();
 	}

@@ -8,11 +8,14 @@ import javax.inject.Singleton;
 import com.dlsc.formsfx.model.structure.Field;
 import com.dlsc.formsfx.model.structure.Form;
 import com.dlsc.formsfx.model.structure.Group;
+import com.dlsc.formsfx.model.util.BindingMode;
 import com.dlsc.formsfx.view.renderer.FormRenderer;
 
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenterFactory;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -54,6 +57,7 @@ public class SettingsService {
 	private final ObjectProperty<Font> fontFamily = new SimpleObjectProperty<>(Font.OPEN_SANS);
 	private final ObjectProperty<String> fontSize = new SimpleObjectProperty<>("15px");
 	private final ObjectProperty<String> theme = new SimpleObjectProperty<>("Default");
+	private final BooleanProperty darkMode = new SimpleBooleanProperty(false);
 
 	private ListProperty<Font> fontFamilies = new SimpleListProperty<>(
 			FXCollections.observableArrayList(Font.values()));
@@ -67,6 +71,7 @@ public class SettingsService {
 		fontFamily.setValue(Font.values()[prefs.getInt("fontFamily", 0)]);
 		fontSize.setValue(prefs.get("fontSize", "15px"));
 		theme.setValue(prefs.get("theme", "Default"));
+		darkMode.setValue(prefs.getBoolean("darkMode", false));
 
 		NotificationCenterFactory.getNotificationCenter().subscribe("SHOW_SETTINGS",
 				(key, payload) -> this.showDialog((Window) payload[0]));
@@ -86,6 +91,7 @@ public class SettingsService {
 			prefs.putInt("fontFamily", fontFamily.getValue().ordinal());
 			prefs.put("fontSize", fontSize.getValue());
 			prefs.put("theme", theme.getValue());
+			prefs.putBoolean("darkMode", darkMode.getValue());
 		});
 		dialog.showAndWait();
 	}
@@ -97,8 +103,11 @@ public class SettingsService {
 
 						Field.ofSingleSelectionType(fontFamilies, fontFamily).label("Font Family").span(6),
 
-						Field.ofSingleSelectionType(fontSizes, fontSize).label("Font Size").span(6)))
-				.title("Settings");
+						Field.ofSingleSelectionType(fontSizes, fontSize).label("Font Size").span(6)),
+				Group.of(
+						Field.ofBooleanType(darkMode).label("Dark mode").span(6)))
+				.title("Settings")
+				.binding(BindingMode.CONTINUOUS);
 	}
 
 	public ObjectProperty<Font> fontFamilyProperty() {
@@ -111,6 +120,10 @@ public class SettingsService {
 
 	public ObjectProperty<String> themeProperty() {
 		return this.theme;
+	}
+
+	public BooleanProperty darkModeProperty() {
+		return this.darkMode;
 	}
 
 }
