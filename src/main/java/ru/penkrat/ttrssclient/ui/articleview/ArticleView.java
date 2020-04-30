@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.fxmisc.easybind.EasyBind;
+import org.springframework.stereotype.Component;
 
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -13,6 +14,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Tooltip;
 import javafx.scene.web.WebView;
 
+@Component
 public class ArticleView implements FxmlView<ArticleViewModel>, Initializable {
 
 	@FXML

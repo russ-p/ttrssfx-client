@@ -1,15 +1,12 @@
 package ru.penkrat.ttrssclient;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.fxmisc.easybind.EasyBind;
-
-import com.google.inject.Module;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import de.saxsys.mvvmfx.FluentViewLoader;
-import de.saxsys.mvvmfx.guice.MvvmfxGuiceApplication;
+import de.saxsys.mvvmfx.spring.MvvmfxSpringApplication;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -18,7 +15,8 @@ import ru.penkrat.ttrssclient.ui.StylesManager;
 import ru.penkrat.ttrssclient.ui.feedstree.FeedScope;
 import ru.penkrat.ttrssclient.ui.main.MainView;
 
-public class App extends MvvmfxGuiceApplication {
+@SpringBootApplication
+public class App extends MvvmfxSpringApplication {
 
 	@Inject
 	private FeedScope feedScope;
@@ -44,10 +42,6 @@ public class App extends MvvmfxGuiceApplication {
 
 		stage.setScene(scene);
 		stage.show();
-	}
-
-	@Override
-	public void initGuiceModules(List<Module> modules) throws Exception {
 	}
 
 }

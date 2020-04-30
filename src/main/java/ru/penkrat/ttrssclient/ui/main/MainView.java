@@ -3,6 +3,8 @@ package ru.penkrat.ttrssclient.ui.main;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.springframework.stereotype.Component;
+
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenterFactory;
@@ -14,6 +16,7 @@ import ru.penkrat.ttrssclient.domain.LoginData;
 import ru.penkrat.ttrssclient.ui.Utils;
 import ru.penkrat.ttrssclient.ui.login.LoginDialog;
 
+@Component
 public class MainView implements FxmlView<MainViewModel>, Initializable {
 
 	@FXML

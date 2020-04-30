@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.Subscription;
+import org.springframework.stereotype.Component;
 
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -30,6 +31,7 @@ import javafx.scene.image.WritableImage;
 import net.sf.image4j.codec.ico.ICODecoder;
 import ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem;
 
+@Component
 public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 
 	@FXML

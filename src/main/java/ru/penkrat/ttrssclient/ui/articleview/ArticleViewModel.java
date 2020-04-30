@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.Subscription;
+import org.springframework.stereotype.Component;
 
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.HostServices;
@@ -15,6 +16,7 @@ import ru.penkrat.ttrssclient.domain.Article;
 import ru.penkrat.ttrssclient.service.generic.FunctionService;
 import ru.penkrat.ttrssclient.ui.articles.ArticleScope;
 
+@Component
 public class ArticleViewModel implements ViewModel {
 
 	private final Binding<String> selectedArticleContent;

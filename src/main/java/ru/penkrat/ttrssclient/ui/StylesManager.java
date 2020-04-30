@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.Subscription;
+import org.springframework.stereotype.Component;
 
 import javafx.scene.Scene;
 import ru.penkrat.ttrssclient.ui.settings.SettingsService;
 
-@Singleton
+@Component
 public class StylesManager {
 
 	private SettingsService settings;

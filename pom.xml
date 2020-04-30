@@ -18,58 +18,88 @@
 	</organization>
 
 	<properties>
-		<slf4j.version>1.7.30</slf4j.version>
-		<java.version>1.11</java.version>
-		<mvvmfx.version>1.7.0</mvvmfx.version>
+		<java.version>11</java.version>
+		<javafx.version>14.0.1</javafx.version>
+		<mvvmfx.version>1.9.0-SNAPSHOT</mvvmfx.version>
 		<controlsfx.version>11.0.1</controlsfx.version>
 	</properties>
 
 	<build>
-
 		<finalName>ttrss-client</finalName>
-
 		<plugins>
-
 			<plugin>
-				<groupId>com.zenjava</groupId>
+				<groupId>org.openjfx</groupId>
 				<artifactId>javafx-maven-plugin</artifactId>
-				<version>8.1.5</version>
+				<version>0.0.4</version>
 				<configuration>
-					<mainClass>ru.penkrat.ttrssclient.App</mainClass>
+					<mainClass>ttrssclient/ru.penkrat.ttrssclient.App</mainClass>
 				</configuration>
-				<executions>
-					<execution>
-						<!-- required before build-native -->
-						<id>create-jfxjar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>build-jar</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>create-native</id>
-						<phase>package</phase>
-						<goals>
-							<goal>build-native</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
+				<version>3.8.1</version>
 				<configuration>
+					<forceJavacCompilerUse>true</forceJavacCompilerUse>
+					<compilerArgs>
+						<arg>-Werror</arg>
+						<arg>-verbose</arg>
+					</compilerArgs>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					<release>${java.version}</release>
 				</configuration>
 			</plugin>
 
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>2.2.6.RELEASE</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>2.3.0.M3</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>${javafx.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+			<version>${javafx.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-web</artifactId>
+			<version>${javafx.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>${javafx.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.controlsfx</groupId>
@@ -85,8 +115,13 @@
 
 		<dependency>
 			<groupId>de.saxsys</groupId>
-			<artifactId>mvvmfx-guice</artifactId>
+			<artifactId>mvvmfx-spring-boot</artifactId>
 			<version>${mvvmfx.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 
 		<dependency>
@@ -106,7 +141,6 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.1</version>
 		</dependency>
 
 		<dependency>
@@ -115,49 +149,44 @@
 			<version>1.0.4</version>
 		</dependency>
 
-
-		<!-- Logging -->
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.13.2</version>
-		</dependency>
-
-
 		<dependency>
 			<groupId>org.jclarion</groupId>
 			<artifactId>image4j</artifactId>
 			<version>0.7</version>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>com.samskivert</groupId>
-		    <artifactId>jmustache</artifactId>
-		    <version>1.15</version>
+			<groupId>com.samskivert</groupId>
+			<artifactId>jmustache</artifactId>
 		</dependency>
-		
+
 		<dependency>
-		  <groupId>com.dlsc.formsfx</groupId>
-		  <artifactId>formsfx-core</artifactId>
-		  <version>1.3.1</version>
+			<groupId>com.dlsc.formsfx</groupId>
+			<artifactId>formsfx-core</artifactId>
+			<version>11.4.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jwebmp</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>0.66.0.1</version>
 		</dependency>
 
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>sonatype-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-milestone</id>
+			<name>Spring Milestone Repository</name>
+			<url>https://repo.spring.io/milestone</url>
+		</repository>
+	</repositories>
 
 </project>

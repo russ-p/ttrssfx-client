@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.Subscription;
+import org.springframework.stereotype.Component;
 
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.ObjectProperty;
@@ -20,6 +21,7 @@ import ru.penkrat.ttrssclient.service.generic.BiFunctionService;
 import ru.penkrat.ttrssclient.service.generic.delayed.DelayedConsumerService;
 import ru.penkrat.ttrssclient.ui.feedstree.FeedScope;
 
+@Component
 public class ArticlesListViewModel implements ViewModel {
 
 	private BiFunctionService<Integer, Integer, List<Article>> loadArticlesService;

@@ -2,6 +2,8 @@ package ru.penkrat.ttrssclient.ui.main;
 
 import javax.inject.Inject;
 
+import org.springframework.stereotype.Component;
+
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenterFactory;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,6 +13,7 @@ import ru.penkrat.ttrssclient.ui.articles.ArticleScope;
 import ru.penkrat.ttrssclient.ui.feedstree.FeedScope;
 import ru.penkrat.ttrssclient.ui.login.LoginManager;
 
+@Component
 public class MainViewModel implements ViewModel {
 
 	private StringProperty status = new SimpleStringProperty("");

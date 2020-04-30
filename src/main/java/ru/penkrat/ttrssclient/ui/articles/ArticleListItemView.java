@@ -5,6 +5,8 @@ import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicBinding;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -16,6 +18,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import ru.penkrat.ttrssclient.ui.feedstree.FeedIconProvider;
 
+@Component
+@Scope("prototype")
 public class ArticleListItemView implements FxmlView<ArticleListItemViewModel> {
 
 	private final static String CSS_UNREAD = "list-cell-unread";

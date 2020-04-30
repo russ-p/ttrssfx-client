@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
+
+import org.springframework.stereotype.Component;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
@@ -17,7 +18,7 @@ import javafx.scene.image.WritableImage;
 import net.sf.image4j.codec.ico.ICODecoder;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
 
-@Singleton
+@Component
 public class FeedIconProvider {
 
 	private TTRSSClient client;

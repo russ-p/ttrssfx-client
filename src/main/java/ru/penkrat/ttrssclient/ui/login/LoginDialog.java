@@ -1,6 +1,5 @@
 package ru.penkrat.ttrssclient.ui.login;
 
-import static impl.org.controlsfx.i18n.Localization.getString;
 
 import java.net.URL;
 
@@ -38,19 +37,19 @@ public class LoginDialog extends Dialog<LoginData> {
 		setTitle(getString("login.dlg.title"));
 		dialogPane.setHeaderText(getString("login.dlg.header"));
 		dialogPane.getStyleClass().add("login-dialog");
-		dialogPane.getStylesheets().add(
-				LoginDialog.class.getResource("/org/controlsfx/dialog/dialogs.css").toExternalForm());
+//		dialogPane.getStylesheets().add(
+//				LoginDialog.class.getResource("/org/controlsfx/dialog/dialogs.css").toExternalForm());
 		dialogPane.getStylesheets().add("/styles/styles.css");
 		dialogPane.getButtonTypes().addAll(ButtonType.CANCEL);
 
 		txUserName = (CustomTextField) TextFields.createClearableTextField();
-		txUserName.setLeft(new ImageView(getImage("/org/controlsfx/dialog/user.png")));
+//		txUserName.setLeft(new ImageView(getImage("/org/controlsfx/dialog/user.png")));
 		txUserName.textProperty().bindBidirectional(loginApplicationData.usernameProperty());
 		String userNameCation = getString("login.dlg.user.caption");
 		txUserName.setPromptText(userNameCation);
 
 		txPassword = (CustomPasswordField) TextFields.createClearablePasswordField();
-		txPassword.setLeft(new ImageView(getImage("/org/controlsfx/dialog/lock.png")));
+//		txPassword.setLeft(new ImageView(getImage("/org/controlsfx/dialog/lock.png")));
 		txPassword.textProperty().bindBidirectional(loginApplicationData.passwordProperty());
 		String passwordCaption = getString("login.dlg.pswd.caption");
 		txPassword.setPromptText(passwordCaption);
@@ -100,6 +99,10 @@ public class LoginDialog extends Dialog<LoginData> {
 		});
 
 		setResultConverter(dialogButton -> dialogButton == loginButtonType ? loginApplicationData : null);
+	}
+
+	private String getString(String string) {
+		return string;
 	}
 
 	private Image getImage(String resourceName) {

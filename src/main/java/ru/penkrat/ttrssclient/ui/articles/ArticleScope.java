@@ -1,6 +1,6 @@
 package ru.penkrat.ttrssclient.ui.articles;
 
-import javax.inject.Singleton;
+import org.springframework.stereotype.Component;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -8,7 +8,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import ru.penkrat.ttrssclient.domain.Article;
 
-@Singleton
+@Component
 public class ArticleScope {
 
 	private final ObjectProperty<Article> selectedArticle = new SimpleObjectProperty<>(null);

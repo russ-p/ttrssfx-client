@@ -3,7 +3,8 @@ package ru.penkrat.ttrssclient.ui.settings;
 import java.util.prefs.Preferences;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
+
+import org.springframework.stereotype.Component;
 
 import com.dlsc.formsfx.model.structure.Field;
 import com.dlsc.formsfx.model.structure.Form;
@@ -24,7 +25,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 
-@Singleton
+@Component
 public class SettingsService {
 
 	public enum Font {

@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.fxmisc.easybind.EasyBind;
+import org.springframework.stereotype.Component;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
@@ -20,7 +20,7 @@ import ru.penkrat.ttrssclient.domain.Article;
 import ru.penkrat.ttrssclient.ui.settings.SettingsService;
 import ru.penkrat.ttrssclient.ui.settings.SettingsService.Font;
 
-@Singleton
+@Component
 public class HtmlContentWrapper {
 
 	private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");

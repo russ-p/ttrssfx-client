@@ -1,14 +1,15 @@
 package ru.penkrat.ttrssclient.ui.login;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
+
+import org.springframework.stereotype.Component;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
 import ru.penkrat.ttrssclient.domain.LoginData;
 
-@Singleton
+@Component
 public class LoginManager {
 
 	private final BooleanProperty isLoggedIn = new SimpleBooleanProperty(false);

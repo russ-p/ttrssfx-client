@@ -3,6 +3,8 @@ package ru.penkrat.ttrssclient.ui.articles;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.springframework.stereotype.Component;
+
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -17,6 +19,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollBar;
 
+@Component
 public class ArticlesListView implements FxmlView<ArticlesListViewModel>, Initializable {
 
 	@FXML

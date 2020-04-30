@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.google.inject.Singleton;
+import org.springframework.stereotype.Component;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -12,7 +12,7 @@ import ru.penkrat.ttrssclient.api.TTRSSClient;
 import ru.penkrat.ttrssclient.domain.Category;
 import ru.penkrat.ttrssclient.domain.Feed;
 
-@Singleton
+@Component
 public class LoadFeedsTaskFactory extends Service<List<Feed>> {
 
 	private TTRSSClient client;

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.fxmisc.easybind.EasyBind;
+import org.springframework.stereotype.Component;
 
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenterFactory;
@@ -20,6 +21,7 @@ import ru.penkrat.ttrssclient.service.generic.FunctionService;
 import ru.penkrat.ttrssclient.service.generic.SupplierService;
 import ru.penkrat.ttrssclient.ui.login.LoginManager;
 
+@Component
 public class FeedsViewModel implements ViewModel {
 
 	private TTRSSClient client;
