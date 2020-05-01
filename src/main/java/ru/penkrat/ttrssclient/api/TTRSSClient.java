@@ -192,7 +192,7 @@ public class TTRSSClient {
 	}
 
 	public void updateArticle(int id, int mode, int field) {
-		exec(op("getHeadlines").sid(sid)
+		exec(op("updateArticle").sid(sid)
 				.add("article_ids", id) //
 				.add("mode", mode) //
 				.add("field", field) //
