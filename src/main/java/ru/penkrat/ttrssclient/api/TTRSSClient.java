@@ -1,10 +1,19 @@
 package ru.penkrat.ttrssclient.api;
 
+import static ru.penkrat.ttrssclient.api.TTRSSRequestBody.op;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonValue;
 
@@ -22,11 +31,11 @@ public class TTRSSClient {
 	private static final Logger log = LoggerFactory.getLogger(TTRSSClient.class);
 
 	private String url = "";
-	private String apiUrl = "";
+	private URI apiURI;
 
 	private String sid;
 
-	private JsonHttpClient httpclient = new JsonHttpClient();
+	private HttpClient client = HttpClient.newBuilder().build();
 
 	public TTRSSClient() {
 	}
@@ -38,7 +47,7 @@ public class TTRSSClient {
 			url = url.substring(0, url.length() - 2);
 		}
 		this.url = url;
-		this.apiUrl = url + "/api/";
+		this.apiURI = URI.create(url + "/api/");
 	}
 
 	public String getSid() {
@@ -49,66 +58,95 @@ public class TTRSSClient {
 		this.sid = sid;
 	}
 
-	public boolean checkLogin() {
-		return httpclient.createRequest(apiUrl).add("op", "getVersion") //
-				.add("sid", sid) // session_id
-				.exec().map(json -> json.getInt("status")).map(status -> status == 0).orElse(false);
+	private TTRSSResponseBody exec(TTRSSRequestBody request) {
+		HttpRequest httpReq = HttpRequest.newBuilder()
+				.uri(apiURI)
+				.POST(BodyPublishers.ofString(request.toString()))
+				.setHeader("Content-Type", "application/json")
+				.build();
+		try {
+			if (log.isDebugEnabled()) {
+				log.debug("Send request to {}", httpReq.uri());
+				log.debug(">| {}", request);
+			}
+			HttpResponse<String> response = client.send(httpReq, BodyHandlers.ofString());
+			final var body = response.body();
+			log.debug("<| {}", body);
+			return TTRSSResponseBody.parse(body);
+		} catch (IOException | InterruptedException e) {
+			log.error("Request error", e);
+			throw new RuntimeException(e.getMessage());
+		}
+	}
+
+	// API https://git.tt-rss.org/git/tt-rss/wiki/ApiReference
+
+	public String getVersion() {
+		return exec(op("getVersion").sid(sid))
+				.getContentAsObject()
+				.map(j -> j.getString("version")).orElse("");
 	}
 
 	public boolean login(String username, String password) {
 		sid = null;
 
-		httpclient.createRequest(apiUrl).add("op", "login") //
+		return exec(op("login") //
 				.add("user", username) //
 				.add("password", password) //
-				.exec().ifPresent(json -> {
-					final var content = json.getJsonObject("content");
+		)
+				.getContentAsObject()
+				.map(content -> {
 					if (!content.containsKey("error")) {
 						sid = content.getString("session_id");
+						return true;
 					} else {
 						log.error("op: login, result = {}", content.getString("error"));
+						return false;
 					}
-				});
+				}).orElse(false);
+	}
 
-		return sid != null;
+	public boolean checkLogin() {
+		return exec(op("getVersion").sid(sid)).getStatus() == 0;
 	}
 
 	public void getFeedTree() {
-		httpclient.createRequest(apiUrl).add("sid", sid) // session_id
-				.add("op", "getFeedTree") // operation
-				.add("include_empty", "false") //
-				.exec().ifPresent(json -> {
+		exec(op("getFeedTree").sid(sid).add("include_empty", "false"))
+				.getContentAsArray()
+				.ifPresent(json -> {
 					// TODO
 					// json.getJsonArray("content")
 				});
 	}
 
 	public List<Category> getCategories() {
-		JsonArray jsonArray = httpclient.createRequest(apiUrl).add("sid", sid) // session_id
-				.add("op", "getCategories") // operation
+		return exec(op("getCategories").sid(sid)
 				.add("unread_only", "false") //
 				.add("enable_nested", "false") //
 				.add("include_empty", "false") //
-				.exec().map(js -> js.getJsonArray("content")).get();
-		return jsonArray.stream().map(Category::new).collect(Collectors.toList());
+		).getContentAsArray()
+				.map(data -> data.stream()
+						.map(Category::new)
+						.collect(Collectors.toList()))
+				.orElseGet(Collections::emptyList);
 	}
 
 	public List<Feed> getFeeds(Integer categoryId) {
-		JsonArray jsonArray = httpclient.createRequest(apiUrl).add("sid", sid) // session_id
-				.add("op", "getFeeds") // operation
+		return exec(op("getFeeds").sid(sid)
 				.add("cat_id", categoryId) //
 				.add("unread_only", "false") //
 				.add("limit", "50") //
 				.add("offset", "0") //
 				.add("include_nested", "false") //
-				.exec().map(js -> js.getJsonArray("content")).get();
-
-		return jsonArray.stream().map(Feed::new).collect(Collectors.toList());
+		).getContentAsArray()
+				.map(data -> data.stream()
+						.map(Feed::new)
+						.collect(Collectors.toList()))
+				.orElseGet(Collections::emptyList);
 	}
 
 	public List<Article> getHeadlines(Integer feedId, int skip) {
-		JsonArray jsonArray = httpclient.createRequest(apiUrl).add("sid", sid) // session_id
-				.add("op", "getHeadlines") // operation
+		return exec(op("getHeadlines").sid(sid)
 				.add("feed_id", feedId) //
 				.add("limit", "25") //
 				.add("skip", skip) //
@@ -125,15 +163,18 @@ public class TTRSSClient {
 				.add("sanitize", "false") //
 				.add("force_update", "false") //
 				.add("has_sandbox", "false") //
-				.exec().map(js -> js.getJsonArray("content")).get();
-
-		return jsonArray.stream().map(Article::new).collect(Collectors.toList());
+		).getContentAsArray()
+				.map(data -> data.stream()
+						.map(Article::new)
+						.collect(Collectors.toList()))
+				.orElseGet(Collections::emptyList);
 	}
 
 	public Optional<JsonValue> getArticle(int id) {
-		return httpclient.createRequest(apiUrl).add("sid", sid).add("op", "getArticle").add("article_id", id)
-				.exec().map(js -> js.getJsonArray("content")).orElse(Json.createArrayBuilder().build()).stream()
-				.findFirst();
+		return exec(op("getArticle").sid(sid)
+				.add("article_id", id) //
+		).getContentAsArray()
+				.flatMap((JsonArray data) -> data.stream().findFirst());
 	}
 
 	public String getContent(Article article) {
@@ -151,13 +192,12 @@ public class TTRSSClient {
 	}
 
 	public void updateArticle(int id, int mode, int field) {
-		httpclient.createRequest(apiUrl).add("sid", sid) // session_id
-				.add("op", "updateArticle") // operation
+		exec(op("getHeadlines").sid(sid)
 				.add("article_ids", id) //
 				.add("mode", mode) //
 				.add("field", field) //
 				.add("data", "") //
-				.exec().isPresent();
+		).getStatus();
 	}
 
 }

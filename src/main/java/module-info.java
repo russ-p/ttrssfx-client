@@ -8,6 +8,8 @@ open module ttrssclient {
 
 	requires java.prefs;
 	requires java.desktop;
+	
+	requires java.net.http;
 
 	requires org.controlsfx.controls;
 	requires com.samskivert.jmustache;
@@ -15,8 +17,6 @@ open module ttrssclient {
 
 	requires de.saxsys.mvvmfx;
 	requires de.saxsys.mvvmfx.spring_boot;
-	requires org.apache.httpcomponents.httpclient;
-	requires org.apache.httpcomponents.httpcore;
 
 	requires spring.beans;
 	requires spring.core;
@@ -35,6 +35,6 @@ open module ttrssclient {
 	requires image4j;
 	requires javax.json;
 	requires commons.lang;
-
+	
 	exports ru.penkrat.ttrssclient;
 }
