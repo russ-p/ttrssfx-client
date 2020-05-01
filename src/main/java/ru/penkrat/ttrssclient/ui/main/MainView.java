@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import de.saxsys.mvvmfx.utils.notifications.NotificationCenterFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import ru.penkrat.ttrssclient.ui.login.LoginDialogView;
 import ru.penkrat.ttrssclient.ui.settings.SettingsViewDialog;
@@ -24,6 +26,21 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 	@FXML
 	Label statusLabel;
 
+	@FXML
+	Button updateButton;
+
+	@FXML
+	Button loginButton;
+
+	@FXML
+	Button settingsButton;
+
+	@FXML
+	Button prevButton;
+
+	@FXML
+	Button nextButton;
+
 	@InjectViewModel
 	MainViewModel viewModel;
 
@@ -33,6 +50,12 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		statusLabel.textProperty().bind(viewModel.statusProperty());
+
+		updateButton.setGraphic(new FontIcon());
+		loginButton.setGraphic(new FontIcon());
+		settingsButton.setGraphic(new FontIcon());
+		prevButton.setGraphic(new FontIcon());
+		nextButton.setGraphic(new FontIcon());
 
 		viewModel.subscribe("showLoginDialog", (key, payload) -> {
 			onLogin();

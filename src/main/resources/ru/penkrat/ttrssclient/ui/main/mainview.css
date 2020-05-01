@@ -1,0 +1,23 @@
+.ikonli-font-icon {
+	-fx-icon-color: -fx-text-base-color;
+}
+
+#update-button .ikonli-font-icon {
+	-fx-icon-code: "mdi-reload";
+}
+
+#login-button .ikonli-font-icon {
+	-fx-icon-code: "mdi-account";
+}
+
+#settings-button .ikonli-font-icon {
+	-fx-icon-code: "mdi-settings";
+}
+
+#prev-button .ikonli-font-icon {
+	-fx-icon-code: "mdi-arrow-left";
+}
+
+#next-button .ikonli-font-icon {
+	-fx-icon-code: "mdi-arrow-right";
+}

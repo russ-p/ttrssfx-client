@@ -11,17 +11,17 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.penkrat.ttrssclient.ui.main.MainView">
+<VBox stylesheets="@mainview.css" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.penkrat.ttrssclient.ui.main.MainView">
 	<children>
 		<ToolBar prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
 			<items>
-				<Button fx:id="updateButton" mnemonicParsing="false" onAction="#onUpdate" text="Update" />
-				<Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLogin" text="Login" />
-				<Button fx:id="settingsButton" mnemonicParsing="false" onAction="#onSettings" text="Settings" />
+				<Button id="update-button" fx:id="updateButton" mnemonicParsing="false" onAction="#onUpdate" text="Update" />
+				<Button id="login-button" fx:id="loginButton" mnemonicParsing="false" onAction="#onLogin" text="Login" />
+				<Button id="settings-button" fx:id="settingsButton" mnemonicParsing="false" onAction="#onSettings" text="Settings" />
 				<Pane HBox.hgrow="ALWAYS" /> 
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="0.0" />
-				<Button mnemonicParsing="false" onAction="#onPrev" text="Prev" />
-				<Button mnemonicParsing="false" onAction="#onNext" text="Next" />
+				<Button id="prev-button" fx:id="prevButton" mnemonicParsing="false" onAction="#onPrev" text="Back" />
+				<Button id="next-button" fx:id="nextButton" mnemonicParsing="false" onAction="#onNext" text="Next" />
 			</items>
 		</ToolBar>
 		<SplitPane dividerPositions="0.2, 0.5" layoutX="149.0" layoutY="154.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">

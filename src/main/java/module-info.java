@@ -5,28 +5,32 @@ open module ttrssclient {
 	requires javafx.web;
 	requires javafx.swing;
 	requires transitive javafx.graphics;
-	
+
 	requires java.prefs;
 	requires java.desktop;
 
 	requires org.controlsfx.controls;
 	requires com.samskivert.jmustache;
 	requires org.slf4j;
-	
+
 	requires de.saxsys.mvvmfx;
 	requires de.saxsys.mvvmfx.spring_boot;
 	requires org.apache.httpcomponents.httpclient;
 	requires org.apache.httpcomponents.httpcore;
-	
+
 	requires spring.beans;
 	requires spring.core;
 	requires spring.context;
 	requires spring.boot;
 	requires spring.boot.autoconfigure;
-	
+
 	requires com.dlsc.formsfx;
 	requires javax.inject;
-	
+
+	requires org.kordamp.iconli.core;
+	requires org.kordamp.ikonli.javafx;
+	requires org.kordamp.ikonli.materialdesign;
+
 	requires easybind;
 	requires image4j;
 	requires javax.json;
