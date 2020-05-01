@@ -19,6 +19,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -59,6 +61,9 @@ public class SettingsService {
 	private final ObjectProperty<String> fontSize = new SimpleObjectProperty<>("15px");
 	private final ObjectProperty<String> theme = new SimpleObjectProperty<>("Default");
 	private final BooleanProperty darkMode = new SimpleBooleanProperty(false);
+	private final StringProperty url = new SimpleStringProperty("http://example.com/tt-rss");
+	private final StringProperty username = new SimpleStringProperty("");
+	private final StringProperty password = new SimpleStringProperty("");
 
 	private ListProperty<Font> fontFamilies = new SimpleListProperty<>(
 			FXCollections.observableArrayList(Font.values()));
@@ -69,10 +74,7 @@ public class SettingsService {
 
 	@Inject
 	public SettingsService() {
-		fontFamily.setValue(Font.values()[prefs.getInt("fontFamily", 0)]);
-		fontSize.setValue(prefs.get("fontSize", "15px"));
-		theme.setValue(prefs.get("theme", "Default"));
-		darkMode.setValue(prefs.getBoolean("darkMode", false));
+		loadSettings();
 
 		NotificationCenterFactory.getNotificationCenter().subscribe("SHOW_SETTINGS",
 				(key, payload) -> this.showDialog((Window) payload[0]));
@@ -89,10 +91,7 @@ public class SettingsService {
 		dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
 		dialog.setTitle(form.getTitle());
 		dialog.setOnHidden(evt -> {
-			prefs.putInt("fontFamily", fontFamily.getValue().ordinal());
-			prefs.put("fontSize", fontSize.getValue());
-			prefs.put("theme", theme.getValue());
-			prefs.putBoolean("darkMode", darkMode.getValue());
+			storeSettings();
 		});
 		dialog.showAndWait();
 	}
@@ -100,13 +99,15 @@ public class SettingsService {
 	private Form createForm() {
 		return Form.of(
 				Group.of(
-						Field.ofSingleSelectionType(themes, theme).label("Theme").span(12),
-
-						Field.ofSingleSelectionType(fontFamilies, fontFamily).label("Font Family").span(6),
-
-						Field.ofSingleSelectionType(fontSizes, fontSize).label("Font Size").span(6)),
+						Field.ofStringType(url).label("TT-RSS URL").span(12),
+						Field.ofStringType(username).label("Username").span(6),
+						Field.ofPasswordType(password).label("Password").tooltip("Leave blank").span(6)),
 				Group.of(
-						Field.ofBooleanType(darkMode).label("Dark mode").span(6)))
+						Field.ofBooleanType(darkMode).label("Dark mode").span(6)),
+				Group.of(
+						Field.ofSingleSelectionType(themes, theme).label("Theme").span(12),
+						Field.ofSingleSelectionType(fontFamilies, fontFamily).label("Font Family").span(6),
+						Field.ofSingleSelectionType(fontSizes, fontSize).label("Font Size").span(6)))
 				.title("Settings")
 				.binding(BindingMode.CONTINUOUS);
 	}
@@ -127,4 +128,35 @@ public class SettingsService {
 		return this.darkMode;
 	}
 
+	public StringProperty urlProperty() {
+		return this.url;
+	}
+
+	public String getUsername() {
+		return this.username.getValue();
+	}
+
+	public String getPassword() {
+		return this.password.getValue();
+	}
+
+	private void loadSettings() {
+		fontFamily.setValue(Font.values()[prefs.getInt("fontFamily", 0)]);
+		fontSize.setValue(prefs.get("fontSize", "15px"));
+		theme.setValue(prefs.get("theme", "Default"));
+		darkMode.setValue(prefs.getBoolean("darkMode", false));
+		url.setValue(prefs.get("url", url.getValue()));
+		username.setValue(prefs.get("username", username.getValue()));
+		password.setValue(prefs.get("password", password.getValue()));
+	}
+
+	private void storeSettings() {
+		prefs.putInt("fontFamily", fontFamily.getValue().ordinal());
+		prefs.put("fontSize", fontSize.getValue());
+		prefs.put("theme", theme.getValue());
+		prefs.putBoolean("darkMode", darkMode.getValue());
+		prefs.put("url", url.getValue());
+		prefs.put("username", username.getValue());
+		prefs.put("password", password.getValue()); // TODO: not safe
+	}
 }

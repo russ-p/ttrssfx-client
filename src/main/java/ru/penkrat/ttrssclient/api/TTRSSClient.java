@@ -15,33 +15,30 @@ import org.springframework.stereotype.Component;
 import ru.penkrat.ttrssclient.domain.Article;
 import ru.penkrat.ttrssclient.domain.Category;
 import ru.penkrat.ttrssclient.domain.Feed;
-import ru.penkrat.ttrssclient.domain.LoginData;
 
 @Component
 public class TTRSSClient {
 
 	private static final Logger log = LoggerFactory.getLogger(TTRSSClient.class);
 
-	private LoginData loginData;
+	private String url = "";
+	private String apiUrl = "";
 
 	private String sid;
 
 	private JsonHttpClient httpclient = new JsonHttpClient();
 
 	public TTRSSClient() {
-
 	}
 
-	public void setLoginData(LoginData loginData) {
-		this.loginData = loginData;
-	}
-
-	public LoginData getLoginData() {
-		return loginData;
-	}
-
-	private String getApiUrl() {
-		return loginData.getUrl() + "/api/";
+	public void setUrl(String url) {
+		if (url == null)
+			return;
+		if (url.endsWith("/")) {
+			url = url.substring(0, url.length() - 2);
+		}
+		this.url = url;
+		this.apiUrl = url + "/api/";
 	}
 
 	public String getSid() {
@@ -53,32 +50,31 @@ public class TTRSSClient {
 	}
 
 	public boolean checkLogin() {
-		return httpclient.createRequest(getApiUrl()).add("op", "getVersion") //
+		return httpclient.createRequest(apiUrl).add("op", "getVersion") //
 				.add("sid", sid) // session_id
 				.exec().map(json -> json.getInt("status")).map(status -> status == 0).orElse(false);
 	}
 
-	public boolean login() {
-		if (loginData == null)
-			return false;
-
+	public boolean login(String username, String password) {
 		sid = null;
 
-		httpclient.createRequest(getApiUrl()).add("op", "login") //
-				.add("user", loginData.getUsername()) //
-				.add("password", loginData.getPassword()) //
+		httpclient.createRequest(apiUrl).add("op", "login") //
+				.add("user", username) //
+				.add("password", password) //
 				.exec().ifPresent(json -> {
-					sid = json.getJsonObject("content").getString("session_id");
+					final var content = json.getJsonObject("content");
+					if (!content.containsKey("error")) {
+						sid = content.getString("session_id");
+					} else {
+						log.error("op: login, result = {}", content.getString("error"));
+					}
 				});
-
-		if (sid == null)
-			log.error("Login error.");
 
 		return sid != null;
 	}
 
 	public void getFeedTree() {
-		httpclient.createRequest(getApiUrl()).add("sid", sid) // session_id
+		httpclient.createRequest(apiUrl).add("sid", sid) // session_id
 				.add("op", "getFeedTree") // operation
 				.add("include_empty", "false") //
 				.exec().ifPresent(json -> {
@@ -88,7 +84,7 @@ public class TTRSSClient {
 	}
 
 	public List<Category> getCategories() {
-		JsonArray jsonArray = httpclient.createRequest(getApiUrl()).add("sid", sid) // session_id
+		JsonArray jsonArray = httpclient.createRequest(apiUrl).add("sid", sid) // session_id
 				.add("op", "getCategories") // operation
 				.add("unread_only", "false") //
 				.add("enable_nested", "false") //
@@ -98,7 +94,7 @@ public class TTRSSClient {
 	}
 
 	public List<Feed> getFeeds(Integer categoryId) {
-		JsonArray jsonArray = httpclient.createRequest(getApiUrl()).add("sid", sid) // session_id
+		JsonArray jsonArray = httpclient.createRequest(apiUrl).add("sid", sid) // session_id
 				.add("op", "getFeeds") // operation
 				.add("cat_id", categoryId) //
 				.add("unread_only", "false") //
@@ -111,7 +107,7 @@ public class TTRSSClient {
 	}
 
 	public List<Article> getHeadlines(Integer feedId, int skip) {
-		JsonArray jsonArray = httpclient.createRequest(getApiUrl()).add("sid", sid) // session_id
+		JsonArray jsonArray = httpclient.createRequest(apiUrl).add("sid", sid) // session_id
 				.add("op", "getHeadlines") // operation
 				.add("feed_id", feedId) //
 				.add("limit", "25") //
@@ -135,7 +131,7 @@ public class TTRSSClient {
 	}
 
 	public Optional<JsonValue> getArticle(int id) {
-		return httpclient.createRequest(getApiUrl()).add("sid", sid).add("op", "getArticle").add("article_id", id)
+		return httpclient.createRequest(apiUrl).add("sid", sid).add("op", "getArticle").add("article_id", id)
 				.exec().map(js -> js.getJsonArray("content")).orElse(Json.createArrayBuilder().build()).stream()
 				.findFirst();
 	}
@@ -147,15 +143,15 @@ public class TTRSSClient {
 	}
 
 	public String getIconURL(int id) {
-		return loginData.getUrl() + "/feed-icons/" + id + ".ico";
+		return url + "/feed-icons/" + id + ".ico";
 	}
 
 	public String getIconURL(String id) {
-		return loginData.getUrl() + "/feed-icons/" + id + ".ico";
+		return url + "/feed-icons/" + id + ".ico";
 	}
 
 	public void updateArticle(int id, int mode, int field) {
-		httpclient.createRequest(getApiUrl()).add("sid", sid) // session_id
+		httpclient.createRequest(apiUrl).add("sid", sid) // session_id
 				.add("op", "updateArticle") // operation
 				.add("article_ids", id) //
 				.add("mode", mode) //
