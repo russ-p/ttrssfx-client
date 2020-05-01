@@ -10,6 +10,8 @@ open module ttrssclient {
 	requires java.desktop;
 	
 	requires java.net.http;
+	requires java.json;
+	requires javax.inject;
 
 	requires org.controlsfx.controls;
 	requires com.samskivert.jmustache;
@@ -25,7 +27,6 @@ open module ttrssclient {
 	requires spring.boot.autoconfigure;
 
 	requires com.dlsc.formsfx;
-	requires javax.inject;
 
 	requires org.kordamp.iconli.core;
 	requires org.kordamp.ikonli.javafx;
@@ -33,7 +34,6 @@ open module ttrssclient {
 
 	requires easybind;
 	requires image4j;
-	requires javax.json;
 	requires commons.lang;
 	
 	exports ru.penkrat.ttrssclient;
