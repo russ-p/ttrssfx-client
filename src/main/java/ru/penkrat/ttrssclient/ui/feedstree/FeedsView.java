@@ -1,8 +1,5 @@
 package ru.penkrat.ttrssclient.ui.feedstree;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,15 +7,18 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.Subscription;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.materialdesign.MaterialDesign;
 import org.springframework.stereotype.Component;
 
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -27,9 +27,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
-import net.sf.image4j.codec.ico.ICODecoder;
 import ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem;
+import ru.penkrat.ttrssclient.domain.Feed;
 
 @Component
 public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
@@ -40,8 +39,11 @@ public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 	@InjectViewModel
 	private FeedsViewModel viewModel;
 
+	@Inject
+	private FeedIconProvider feedIconProvider;
+
 	private TreeItem<CategoryFeedTreeItem> treeRoot;
-	
+
 	private List<Subscription> subs = new ArrayList<>();
 
 	@Override
@@ -81,13 +83,14 @@ public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 					List<TreeItem<CategoryFeedTreeItem>> list = c.getAddedSubList().stream()
 							.map(cat -> new TreeItem<CategoryFeedTreeItem>(cat))
 							.peek(treeItem -> {
-						if (!treeItem.getValue().isLeaf()) {
-							ObservableList<TreeItem<CategoryFeedTreeItem>> chItems = EasyBind.map(
-									treeItem.getValue().getChildren(), feed -> new TreeItem<>(feed, createIcon(feed)));
-							Subscription s = EasyBind.listBind(treeItem.getChildren(), chItems);
-							subs.add(s);
-						}
-					}).collect(Collectors.toList());
+								if (!treeItem.getValue().isLeaf()) {
+									ObservableList<TreeItem<CategoryFeedTreeItem>> chItems = EasyBind.map(
+											treeItem.getValue().getChildren(),
+											feed -> new TreeItem<>(feed, createIcon(feed)));
+									Subscription s = EasyBind.listBind(treeItem.getChildren(), chItems);
+									subs.add(s);
+								}
+							}).collect(Collectors.toList());
 					treeRoot.getChildren().addAll(c.getFrom(), list);
 				}
 				if (c.wasRemoved()) {
@@ -125,32 +128,18 @@ public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 	}
 
 	private Node createIcon(CategoryFeedTreeItem feedItem) {
-		ImageView imageView = new ImageView();
-		String url = viewModel.getIconUrl(feedItem);
-		if (url != null) {
-			Image image = getImage(url);
-			if (image != null)
+		if (feedItem instanceof Feed) {
+			Image image = feedIconProvider.getImage(String.valueOf(((Feed) feedItem).getId()));
+			if (image != null) {
+				ImageView imageView = new ImageView();
 				imageView.setImage(image);
-		}
-		imageView.setFitWidth(16);
-		imageView.setFitHeight(16);
-		return imageView;
-	}
-
-	private Image getImage(String url) {
-		Image image = new Image(url, false);
-		if (image.getException() != null) {
-			try {
-				try (InputStream istream = new URL(url).openStream();) {
-					List<BufferedImage> images = ICODecoder.read(istream);
-					if (!images.isEmpty())
-						image = SwingFXUtils.toFXImage(images.get(0), new WritableImage(16, 16));
-				}
-			} catch (IOException e) {
-				// TODO:
+				imageView.setFitWidth(16);
+				imageView.setFitHeight(16);
+				return imageView;
 			}
+			return new FontIcon(MaterialDesign.MDI_IMAGE_BROKEN);
 		}
-		return image;
+		return new FontIcon(MaterialDesign.MDI_FOLDER);
 	}
 
 }

@@ -24,8 +24,6 @@ import ru.penkrat.ttrssclient.ui.login.LoginManager;
 @Component
 public class FeedsViewModel implements ViewModel {
 
-	private TTRSSClient client;
-
 	private SupplierService<List<Category>> loadCategoriesService;
 
 	private FunctionService<Integer, List<Feed>> loadFeedsService;
@@ -37,12 +35,11 @@ public class FeedsViewModel implements ViewModel {
 	@Inject
 	public FeedsViewModel(TTRSSClient client, FeedScope feedScope, LoginManager loginManager,
 			LoadFeedsTaskFactory loadFeedsTaskFactory) {
-		this.client = client;
 		loadCategoriesService = new SupplierService<>(client::getCategories, "Загружаю категории");
 		loadCategoriesService.setOnSucceeded(t -> {
 			rootItems.setAll(loadCategoriesService.getValue());
 			loadCategoriesService.getValue().parallelStream()
-				.forEach(task -> loadFeedsTaskFactory.runTask(task));
+					.forEach(task -> loadFeedsTaskFactory.runTask(task));
 		});
 		loadCategoriesService.setOnFailed(e -> {
 			loadCategoriesService.getException().printStackTrace();
@@ -98,14 +95,6 @@ public class FeedsViewModel implements ViewModel {
 
 	public ObservableList<CategoryFeedTreeItem> getRootItems() {
 		return rootItems;
-	}
-
-	public String getIconUrl(CategoryFeedTreeItem catFeedItem) {
-		if (catFeedItem instanceof Feed) {
-			Feed feed = (Feed) catFeedItem;
-			return client.getIconURL(feed.getId());
-		}
-		return null;
 	}
 
 }

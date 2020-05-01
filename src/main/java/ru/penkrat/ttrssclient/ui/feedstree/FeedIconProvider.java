@@ -52,6 +52,7 @@ public class FeedIconProvider {
 				}
 			} catch (IOException e) {
 				// TODO:
+				return null;
 			}
 		}
 		return image;
