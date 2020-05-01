@@ -38,8 +38,4 @@ public class MainViewModel implements ViewModel {
 		}
 	}
 
-	public void login() {
-		publish("showLoginDialog");
-	}
-
 }

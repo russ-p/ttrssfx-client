@@ -6,26 +6,12 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
-import com.dlsc.formsfx.model.structure.Field;
-import com.dlsc.formsfx.model.structure.Form;
-import com.dlsc.formsfx.model.structure.Group;
-import com.dlsc.formsfx.model.util.BindingMode;
-import com.dlsc.formsfx.view.renderer.FormRenderer;
-
-import de.saxsys.mvvmfx.utils.notifications.NotificationCenterFactory;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.layout.VBox;
-import javafx.stage.Window;
 
 @Component
 public class SettingsService {
@@ -65,51 +51,13 @@ public class SettingsService {
 	private final StringProperty username = new SimpleStringProperty("");
 	private final StringProperty password = new SimpleStringProperty("");
 
-	private ListProperty<Font> fontFamilies = new SimpleListProperty<>(
-			FXCollections.observableArrayList(Font.values()));
-	private ListProperty<String> fontSizes = new SimpleListProperty<>(FXCollections.observableArrayList(FONT_SIZES));
-	private ListProperty<String> themes = new SimpleListProperty<>(FXCollections.observableArrayList(THEMES));
+
 
 	private Preferences prefs = Preferences.userNodeForPackage(SettingsService.class);
 
 	@Inject
 	public SettingsService() {
 		loadSettings();
-
-		NotificationCenterFactory.getNotificationCenter().subscribe("SHOW_SETTINGS",
-				(key, payload) -> this.showDialog((Window) payload[0]));
-	}
-
-	public void showDialog(Window owner) {
-		final Form form = createForm();
-		VBox content = new FormRenderer(form);
-		content.setPadding(new javafx.geometry.Insets(8));
-
-		Dialog<Void> dialog = new javafx.scene.control.Dialog<Void>();
-		dialog.initOwner(owner);
-		dialog.getDialogPane().setContent(content);
-		dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-		dialog.setTitle(form.getTitle());
-		dialog.setOnHidden(evt -> {
-			storeSettings();
-		});
-		dialog.showAndWait();
-	}
-
-	private Form createForm() {
-		return Form.of(
-				Group.of(
-						Field.ofStringType(url).label("TT-RSS URL").span(12),
-						Field.ofStringType(username).label("Username").span(6),
-						Field.ofPasswordType(password).label("Password").tooltip("Leave blank").span(6)),
-				Group.of(
-						Field.ofBooleanType(darkMode).label("Dark mode").span(6)),
-				Group.of(
-						Field.ofSingleSelectionType(themes, theme).label("Theme").span(12),
-						Field.ofSingleSelectionType(fontFamilies, fontFamily).label("Font Family").span(6),
-						Field.ofSingleSelectionType(fontSizes, fontSize).label("Font Size").span(6)))
-				.title("Settings")
-				.binding(BindingMode.CONTINUOUS);
 	}
 
 	public ObjectProperty<Font> fontFamilyProperty() {
@@ -150,7 +98,7 @@ public class SettingsService {
 		password.setValue(prefs.get("password", password.getValue()));
 	}
 
-	private void storeSettings() {
+	void storeSettings() {
 		prefs.putInt("fontFamily", fontFamily.getValue().ordinal());
 		prefs.put("fontSize", fontSize.getValue());
 		prefs.put("theme", theme.getValue());

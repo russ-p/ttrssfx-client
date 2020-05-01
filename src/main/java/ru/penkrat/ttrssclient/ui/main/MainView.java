@@ -15,8 +15,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import ru.penkrat.ttrssclient.ui.Utils;
 import ru.penkrat.ttrssclient.ui.login.LoginDialogView;
+import ru.penkrat.ttrssclient.ui.settings.SettingsViewDialog;
 
 @Component
 public class MainView implements FxmlView<MainViewModel>, Initializable {
@@ -35,9 +35,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 		statusLabel.textProperty().bind(viewModel.statusProperty());
 
 		viewModel.subscribe("showLoginDialog", (key, payload) -> {
-			appContext.getBean(LoginDialogView.class)
-					.withOwner(statusLabel.getScene().getWindow())
-					.showAndWait();
+			onLogin();
 		});
 	}
 
@@ -48,7 +46,9 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 
 	@FXML
 	public void onLogin() {
-		viewModel.login();
+		appContext.getBean(LoginDialogView.class)
+				.withOwner(statusLabel.getScene().getWindow())
+				.showAndWait();
 	}
 
 	@FXML
@@ -63,6 +63,8 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
 
 	@FXML
 	public void onSettings(ActionEvent event) {
-		NotificationCenterFactory.getNotificationCenter().publish("SHOW_SETTINGS", Utils.parentWindowFromEvent(event));
+		appContext.getBean(SettingsViewDialog.class)
+				.withOwner(statusLabel.getScene().getWindow())
+				.showAndWait();
 	}
 }
