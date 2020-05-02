@@ -2,7 +2,7 @@ package ru.penkrat.ttrssclient.ui.articles;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.monadic.MonadicBinding;
 import org.springframework.context.annotation.Scope;

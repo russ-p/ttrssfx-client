@@ -34,7 +34,7 @@ open module ttrssclient {
 	requires com.github.russ_p.ico4jfx;
 	
 	requires easybind;
-	requires commons.lang;
+	requires org.apache.commons.lang3;
 	
 	exports ru.penkrat.ttrssclient;
 }
