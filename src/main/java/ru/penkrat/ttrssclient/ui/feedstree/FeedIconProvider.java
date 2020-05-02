@@ -1,21 +1,20 @@
 package ru.penkrat.ttrssclient.ui.feedstree;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 
-import javafx.embed.swing.SwingFXUtils;
+import com.github.russ_p.ico4jfx.ICODecoder;
+
 import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
-import net.sf.image4j.codec.ico.ICODecoder;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
 
 @Component
@@ -43,19 +42,18 @@ public class FeedIconProvider {
 
 	private Image loadImage(String url) {
 		Image image = new Image(url, false);
-		if (image.getException() != null) {
-			try {
-				try (InputStream istream = new URL(url).openStream();) {
-					List<BufferedImage> images = ICODecoder.read(istream);
-					if (!images.isEmpty())
-						image = SwingFXUtils.toFXImage(images.get(0), new WritableImage(16, 16));
-				}
-			} catch (IOException e) {
-				// TODO:
-				return null;
-			}
+		if (image.getException() == null) {
+			return image;
 		}
-		return image;
+		try (InputStream istream = new URL(url).openStream();) {
+			InputStream bais = new ByteArrayInputStream(StreamUtils.copyToByteArray(istream));
+			return ICODecoder.read(bais).stream()
+					.max(Comparator.comparing(Image::getHeight))
+					.get();
+		} catch (Exception e) {
+			// TODO:
+		}
+		return null;
 	}
 
 }

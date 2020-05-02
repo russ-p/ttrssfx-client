@@ -3,11 +3,10 @@ open module ttrssclient {
 	requires javafx.controls;
 	requires javafx.fxml;
 	requires javafx.web;
-	requires javafx.swing;
+	
 	requires transitive javafx.graphics;
 
 	requires java.prefs;
-	requires java.desktop;
 	
 	requires java.net.http;
 	requires java.json;
@@ -32,8 +31,9 @@ open module ttrssclient {
 	requires org.kordamp.ikonli.javafx;
 	requires org.kordamp.ikonli.materialdesign;
 
+	requires com.github.russ_p.ico4jfx;
+	
 	requires easybind;
-	requires image4j;
 	requires commons.lang;
 	
 	exports ru.penkrat.ttrssclient;
