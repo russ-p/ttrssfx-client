@@ -23,7 +23,14 @@ public class MainViewModel implements ViewModel {
 	public MainViewModel(FeedScope feedScope, ArticleScope articleScope, LoginManager loginManager) {
 		this.loginManager = loginManager;
 		status.bind(feedScope.loadingMessageProperty().concat(articleScope.loadingListMessageProperty()));
-		loginManager.tryLoginWithSavedCredentionals();
+		
+		loginManager.tryLoginWithSavedCredentionals().addListener((ov, o, n) -> {
+			if (n) {
+				NotificationCenterFactory.getNotificationCenter().publish("UPDATE");
+			} else {
+				publish("showLoginDialog");
+			}
+		});
 	}
 
 	public final StringProperty statusProperty() {
@@ -31,11 +38,7 @@ public class MainViewModel implements ViewModel {
 	}
 
 	public void update() {
-		if (loginManager.tryLoginWithSavedCredentionals()) {
-			NotificationCenterFactory.getNotificationCenter().publish("UPDATE");
-		} else {
-			publish("showLoginDialog");
-		}
+		loginManager.tryLoginWithSavedCredentionals();
 	}
 
 }

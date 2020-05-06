@@ -8,11 +8,15 @@ import org.springframework.stereotype.Component;
 
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenterFactory;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
+import ru.penkrat.ttrssclient.service.generic.SupplierService;
 import ru.penkrat.ttrssclient.ui.settings.SettingsService;
 
 @Component
@@ -27,12 +31,17 @@ public class LoginManager implements ViewModel {
 	private final StringProperty username = new SimpleStringProperty("");
 	private final StringProperty password = new SimpleStringProperty("");
 
+	private final SupplierService<Boolean> checkLoginService;
+
 	@Inject
 	public LoginManager(TTRSSClient client, SettingsService settings) {
 		this.client = client;
 		this.settings = settings;
 		client.setUrl(settings.urlProperty().getValue());
 		settings.urlProperty().addListener((ov, o, n) -> client.setUrl(n));
+
+		checkLoginService = new SupplierService<Boolean>(client::checkLogin);
+		checkLoginService.valueProperty().addListener((ov, o, n) -> isLoggedIn.setValue(n));
 	}
 
 	public final BooleanProperty isLoggedInProperty() {
@@ -43,16 +52,15 @@ public class LoginManager implements ViewModel {
 		return isLoggedIn.get();
 	}
 
-	public boolean tryLoginWithSavedCredentionals() {
+	public ReadOnlyObjectProperty<Boolean> tryLoginWithSavedCredentionals() {
 		String sid = prefs.get("sid", "");
 		if (sid.isBlank()) {
 			isLoggedIn.setValue(false);
-			return false;
+			return new SimpleObjectProperty<Boolean>(true);
 		}
 		client.setSid(sid);
-		boolean result = client.checkLogin();
-		isLoggedIn.setValue(result);
-		return result;
+		Platform.runLater(() -> checkLoginService.restart());
+		return checkLoginService.valueProperty();
 	}
 
 	void handleLoginSuccess() {
