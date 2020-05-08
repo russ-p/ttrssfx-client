@@ -47,6 +47,7 @@ public class SettingsService {
 	private final ObjectProperty<String> fontSize = new SimpleObjectProperty<>("15px");
 	private final ObjectProperty<String> theme = new SimpleObjectProperty<>("Default");
 	private final BooleanProperty darkMode = new SimpleBooleanProperty(false);
+	private final BooleanProperty scaled = new SimpleBooleanProperty(false);
 	private final StringProperty url = new SimpleStringProperty("http://example.com/tt-rss");
 	private final StringProperty username = new SimpleStringProperty("");
 	private final StringProperty password = new SimpleStringProperty("");
@@ -75,6 +76,10 @@ public class SettingsService {
 	public BooleanProperty darkModeProperty() {
 		return this.darkMode;
 	}
+	
+	public BooleanProperty scaledProperty() {
+		return this.scaled;
+	}
 
 	public StringProperty urlProperty() {
 		return this.url;
@@ -93,6 +98,7 @@ public class SettingsService {
 		fontSize.setValue(prefs.get("fontSize", "15px"));
 		theme.setValue(prefs.get("theme", "Default"));
 		darkMode.setValue(prefs.getBoolean("darkMode", false));
+		scaled.setValue(prefs.getBoolean("scaled", false));
 		url.setValue(prefs.get("url", url.getValue()));
 		username.setValue(prefs.get("username", username.getValue()));
 		password.setValue(prefs.get("password", password.getValue()));
@@ -103,6 +109,7 @@ public class SettingsService {
 		prefs.put("fontSize", fontSize.getValue());
 		prefs.put("theme", theme.getValue());
 		prefs.putBoolean("darkMode", darkMode.getValue());
+		prefs.putBoolean("scaled", scaled.getValue());
 		prefs.put("url", url.getValue());
 		prefs.put("username", username.getValue());
 		prefs.put("password", password.getValue()); // TODO: not safe

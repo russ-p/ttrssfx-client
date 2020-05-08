@@ -30,7 +30,7 @@
    <center>
       <VBox BorderPane.alignment="CENTER">
          <children>
-      		<Label fx:id="title" alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="213.0" text="Title" wrapText="true">
+      		<Label id="title" fx:id="title" alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="213.0" text="Title" wrapText="true">
                <padding>
                   <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
                </padding>

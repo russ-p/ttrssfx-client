@@ -3,12 +3,25 @@
 }
 
 .list-cell-small {
-	-fx-font-size: 8.0px;
+	-fx-font-size: 0.66em;
 }
 
 .list-cell-excerpt {
 	-fx-text-fill: derive(-fx-control-inner-background, -40%);
-	
-	-fx-font-size: 10px;
+	-fx-font-size: 0.8em;
 	-fx-font-style: italic;
+}
+
+#title.one {
+	min-height: 1.5em;
+	max-height: 1.5em;
+	-fx-min-height: 1.5em;
+	-fx-max-height: 1.5em;
+}
+
+#title.double {
+	min-height: 3em;
+	max-height: 3em;
+	-fx-min-height: 3em;
+	-fx-max-height: 3em;
 }

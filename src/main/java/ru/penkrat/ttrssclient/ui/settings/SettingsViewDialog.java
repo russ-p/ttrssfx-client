@@ -43,7 +43,8 @@ public class SettingsViewDialog extends Dialog<ButtonType> {
 						Field.ofStringType(viewModel.getUsername()).label("Username").span(6),
 						Field.ofPasswordType(viewModel.getPassword()).label("Password").tooltip("Leave blank").span(6)),
 				Group.of(
-						Field.ofBooleanType(viewModel.darkModeProperty()).label("Dark mode").span(6)),
+						Field.ofBooleanType(viewModel.darkModeProperty()).label("Dark mode").span(6),
+						Field.ofBooleanType(viewModel.scaledProperty()).label("150%").span(6)),
 				Group.of(
 						Field.ofSingleSelectionType(themes, viewModel.themeProperty())
 								.label("Theme").span(12),

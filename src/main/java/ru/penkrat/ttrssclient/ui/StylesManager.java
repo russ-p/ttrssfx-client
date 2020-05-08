@@ -19,10 +19,11 @@ public class StylesManager {
 
 	private String commonCss = getClass().getResource("/styles/styles.css").toExternalForm();
 	private String darkCss = getClass().getResource("/styles/dark.css").toExternalForm();
+	private String scale150Css = getClass().getResource("/styles/150.css").toExternalForm();
 
 	private List<Scene> scenes = new ArrayList<>();
 
-	Subscription darkModeSub;
+	Subscription darkModeSub, scaledSub;
 
 	@Inject
 	public StylesManager(SettingsService settings) {
@@ -37,6 +38,15 @@ public class StylesManager {
 				}
 			}
 		});
+		scaledSub = EasyBind.subscribe(settings.scaledProperty(), isScaled -> {
+			for (Scene scene : scenes) {
+				if (isScaled) {
+					scene.getStylesheets().add(scale150Css);
+				} else {
+					scene.getStylesheets().remove(scale150Css);
+				}
+			}
+		});
 	}
 
 	public void registerScene(Scene scene) {
@@ -45,6 +55,9 @@ public class StylesManager {
 		scene.getStylesheets().add(commonCss);
 		if (settings.darkModeProperty().getValue()) {
 			scene.getStylesheets().add(darkCss);
+		}
+		if (settings.scaledProperty().getValue()) {
+			scene.getStylesheets().add(scale150Css);
 		}
 	}
 

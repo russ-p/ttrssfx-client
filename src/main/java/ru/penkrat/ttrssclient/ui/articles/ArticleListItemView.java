@@ -56,11 +56,17 @@ public class ArticleListItemView implements FxmlView<ArticleListItemViewModel> {
 		title.setTooltip(new Tooltip(""));
 		title.getTooltip().textProperty().bind(viewModel.titleProperty());
 
-		MonadicBinding<Integer> height = EasyBind.map(viewModel.titleProperty(),
-				title -> title.length() > 30 ? 48 : 24);
-		title.minHeightProperty().bind(height);
-		title.maxHeightProperty().bind(height);
+		MonadicBinding<Boolean> length = EasyBind.map(viewModel.titleProperty(),
+				title -> title.length() > 30);
+		EasyBind.includeWhen(title.getStyleClass(), "one", length.map(b -> !b));
+		EasyBind.includeWhen(title.getStyleClass(), "double", length);
 
+		/*
+		 * MonadicBinding<Integer> height = EasyBind.map(viewModel.titleProperty(),
+		 * title -> title.length() > 30 ? 48 : 24);
+		 * title.minHeightProperty().bind(height);
+		 * title.maxHeightProperty().bind(height);
+		 */
 		date.textProperty().bind(viewModel.dateProperty());
 		feedTitle.textProperty().bind(viewModel.feedTitleProperty());
 
