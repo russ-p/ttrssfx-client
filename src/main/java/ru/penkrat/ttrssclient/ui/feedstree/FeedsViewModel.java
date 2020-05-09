@@ -14,6 +14,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
 import ru.penkrat.ttrssclient.binding.PipeBinding;
+import ru.penkrat.ttrssclient.binding.Subscription;
 import ru.penkrat.ttrssclient.domain.Category;
 import ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem;
 import ru.penkrat.ttrssclient.domain.Feed;
@@ -31,6 +32,8 @@ public class FeedsViewModel implements ViewModel {
 	private final ObjectProperty<CategoryFeedTreeItem> selectedCategoryOrFeed = new SimpleObjectProperty<>(null);
 
 	private final ObservableList<CategoryFeedTreeItem> rootItems = FXCollections.observableArrayList();
+
+	Subscription sub;
 
 	@Inject
 	public FeedsViewModel(TTRSSClient client, FeedScope feedScope, LoginManager loginManager,
@@ -51,7 +54,7 @@ public class FeedsViewModel implements ViewModel {
 			getSelectedCategoryOrFeed().getChildren().setAll(feeds);
 		});
 
-		PipeBinding.of(selectedCategoryOrFeed)
+		sub = PipeBinding.of(selectedCategoryOrFeed)
 				.subscribe(categoryOrFeed -> {
 					if (categoryOrFeed instanceof Category) {
 						if (categoryOrFeed.getChildren().isEmpty()) {

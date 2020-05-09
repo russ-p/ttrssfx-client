@@ -103,11 +103,11 @@ public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 			}
 		});
 
-		PipeBinding.of(treeView.getSelectionModel().selectedItemProperty())
-				.map(TreeItem::getValue)
-				.subscribe(viewModel.selectedCategoryOrFeedProperty());
+		viewModel.selectedCategoryOrFeedProperty().bind(
+				PipeBinding.of(treeView.getSelectionModel().selectedItemProperty())
+						.map(TreeItem::getValue));
 
-		PipeBinding.of(viewModel.selectedCategoryOrFeedProperty())
+		subs.add(PipeBinding.of(viewModel.selectedCategoryOrFeedProperty())
 				.subscribe(n -> {
 					TreeItem<CategoryFeedTreeItem> selected = findInTree(n, treeRoot);
 					if (selected != null) {
@@ -116,7 +116,7 @@ public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 					} else {
 						treeView.getSelectionModel().clearSelection();
 					}
-				});
+				}));
 	}
 
 	private TreeItem<CategoryFeedTreeItem> findInTree(CategoryFeedTreeItem item, TreeItem<CategoryFeedTreeItem> root) {

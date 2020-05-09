@@ -34,13 +34,12 @@ public class App extends MvvmfxSpringApplication {
 
 	@Override
 	public void startMvvmfx(final Stage stage) throws Exception {
-		
-		PipeBinding.of(feedScope.selectedFeedProperty())
-			.map(Feed::getTitle)
-			.map(feedTitle -> "Tiny-Tiny RSS FX - " + feedTitle)
-			.orElse("Tiny-Tiny RSS FX")
-			.subscribe(stage.titleProperty());
-		
+		stage.titleProperty().bind(
+				PipeBinding.of(feedScope.selectedFeedProperty())
+						.map(Feed::getTitle)
+						.map(feedTitle -> "Tiny-Tiny RSS FX - " + feedTitle)
+						.orElse("Tiny-Tiny RSS FX"));
+
 		final Parent parent = FluentViewLoader.fxmlView(MainView.class).load().getView();
 
 		Scene scene = new Scene(parent);

@@ -60,7 +60,7 @@ public class ArticlesListViewModel implements ViewModel {
 			client.updateArticle(articleModel.getArticle().getId(), 0, 2);
 			articleModel.getArticle().setUnread(false);
 			articleModel.unreadProperty().set(false);
-		}, "Как прочитано", 1000);
+		}, "Прочитано...", 1000);
 		markAsReadService.setOnSucceeded(t -> {
 			// TODO:
 		});
@@ -78,7 +78,9 @@ public class ArticlesListViewModel implements ViewModel {
 				});
 
 		articleScope.loadingListMessageProperty()
-				.bind(loadArticlesService.messageProperty().concat(loadAdditionalArticlesService.messageProperty()));
+				.bind(loadArticlesService.messageProperty()
+						.concat(loadAdditionalArticlesService.messageProperty())
+						.concat(markAsReadService.messageProperty()));
 	}
 
 	public void preload() {

@@ -1,5 +1,8 @@
 package ru.penkrat.ttrssclient.ui.articles;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +19,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import ru.penkrat.ttrssclient.binding.ListBindings;
+import ru.penkrat.ttrssclient.binding.Subscription;
 import ru.penkrat.ttrssclient.ui.feedstree.FeedIconProvider;
 
 @Component
@@ -53,19 +57,21 @@ public class ArticleListItemView implements FxmlView<ArticleListItemViewModel> {
 
 	private BooleanBinding doubledLine;
 
+	private List<Subscription> subs = new ArrayList<>();
+
 	public void initialize() {
 		title.textProperty().bind(viewModel.titleProperty());
 		title.setTooltip(new Tooltip(""));
 		title.getTooltip().textProperty().bind(viewModel.titleProperty());
 
 		doubledLine = viewModel.titleLengthProperty().greaterThan(title.widthProperty().divide(9));
-		ListBindings.includeWhen(title.getStyleClass(), "one", doubledLine.not());
-		ListBindings.includeWhen(title.getStyleClass(), "double", doubledLine);
+		subs.add(ListBindings.includeWhen(title.getStyleClass(), "one", doubledLine.not()));
+		subs.add(ListBindings.includeWhen(title.getStyleClass(), "double", doubledLine));
 
 		date.textProperty().bind(viewModel.dateProperty());
 		feedTitle.textProperty().bind(viewModel.feedTitleProperty());
 
-		ListBindings.includeWhen(title.getStyleClass(), CSS_UNREAD, viewModel.unreadProperty());
+		subs.add(ListBindings.includeWhen(title.getStyleClass(), CSS_UNREAD, viewModel.unreadProperty()));
 
 		iconImage.imageProperty().set(feedIconProvider.getImage(viewModel.getArticle().getFeedId()));
 		excerptLabel.setText(StringUtils.strip(viewModel.getArticle().getExcerpt()));
