@@ -140,6 +140,13 @@ public class PipeBinding<T> extends ObjectBinding<T> {
 	}
 
 	// inherited
+	
+	@Override
+	protected void onInvalidating() {
+		source.getValue(); //XXX FIX
+		super.onInvalidating();
+	};
+
 
 	@Override
 	protected T computeValue() {

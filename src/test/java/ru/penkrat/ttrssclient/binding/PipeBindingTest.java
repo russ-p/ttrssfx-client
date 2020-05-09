@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import javafx.beans.binding.ObjectBinding;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.util.Pair;
@@ -171,6 +172,61 @@ public class PipeBindingTest {
 		assertThat(counter).hasValue(1);
 
 		pipeBinding.dispose();
+	}
+
+	@Test
+	public void testGCWithBind() throws Exception {
+		SimpleObjectProperty<Integer> sourcePropery = new SimpleObjectProperty<>(1);
+		SimpleObjectProperty<Integer> targetPropery = new SimpleObjectProperty<>(0);
+
+		targetPropery.bind(PipeBinding.of(sourcePropery)
+				.filter(i -> i > 1)
+				.orElse(1)
+				.map(i -> i * 10)
+				.filter(i -> i > 1)
+				.map(i -> i * 10));
+
+		for (int j = 2; j < 10; j++) {
+			System.gc();
+			sourcePropery.setValue(j);
+			assertThat(targetPropery.get()).isEqualTo(j * 100);
+		}
+	}
+
+	@Test
+	public void testGCWithSubscription() throws Exception {
+		SimpleObjectProperty<Integer> sourcePropery = new SimpleObjectProperty<>(1);
+		SimpleObjectProperty<Integer> targetPropery = new SimpleObjectProperty<>(0);
+
+		Subscription subscription = PipeBinding.of(sourcePropery)
+				.filter(i -> i > 1)
+				.orElse(1)
+				.map(i -> i * 10)
+				.filter(i -> i > 1)
+				.map(i -> i * 10)
+				.subscribe(targetPropery);
+
+		for (int j = 2; j < 10; j++) {
+			System.gc();
+			sourcePropery.setValue(j);
+			assertThat(targetPropery.get()).isEqualTo(j * 100);
+		}
+		
+		 subscription.unsubscribe();
+	}
+
+	@Test
+	public void testGCPlatformIml() throws Exception {
+		SimpleIntegerProperty sourcePropery = new SimpleIntegerProperty(1);
+		SimpleIntegerProperty targetPropery = new SimpleIntegerProperty(0);
+
+		targetPropery.bind(sourcePropery.multiply(10).multiply(10));
+
+		for (int j = 2; j < 10; j++) {
+			System.gc();
+			sourcePropery.setValue(j);
+			assertThat(targetPropery.get()).isEqualTo(j * 100);
+		}
 	}
 
 }
