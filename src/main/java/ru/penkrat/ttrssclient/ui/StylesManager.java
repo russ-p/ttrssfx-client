@@ -5,11 +5,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.fxmisc.easybind.EasyBind;
-import org.fxmisc.easybind.Subscription;
 import org.springframework.stereotype.Component;
 
 import javafx.scene.Scene;
+import ru.penkrat.ttrssclient.binding.PipeBinding;
+import ru.penkrat.ttrssclient.binding.Subscription;
 import ru.penkrat.ttrssclient.ui.settings.SettingsService;
 
 @Component
@@ -29,16 +29,8 @@ public class StylesManager {
 	public StylesManager(SettingsService settings) {
 		this.settings = settings;
 
-		darkModeSub = EasyBind.subscribe(settings.darkModeProperty(), isDark -> {
-			for (Scene scene : scenes) {
-				if (isDark) {
-					scene.getStylesheets().add(darkCss);
-				} else {
-					scene.getStylesheets().remove(darkCss);
-				}
-			}
-		});
-		scaledSub = EasyBind.subscribe(settings.scaledProperty(), isScaled -> {
+		scaledSub = PipeBinding.of(settings.scaledProperty())
+				.subscribe( isScaled -> {
 			for (Scene scene : scenes) {
 				if (isScaled) {
 					scene.getStylesheets().add(scale150Css);
@@ -47,6 +39,16 @@ public class StylesManager {
 				}
 			}
 		});
+		darkModeSub = PipeBinding.of(settings.darkModeProperty())
+				.subscribe(isDark -> {
+					for (Scene scene : scenes) {
+						if (isDark) {
+							scene.getStylesheets().add(darkCss);
+						} else {
+							scene.getStylesheets().remove(darkCss);
+						}
+					}
+				});
 	}
 
 	public void registerScene(Scene scene) {

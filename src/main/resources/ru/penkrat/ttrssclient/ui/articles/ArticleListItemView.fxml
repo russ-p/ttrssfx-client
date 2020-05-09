@@ -31,9 +31,9 @@
       <VBox BorderPane.alignment="CENTER">
          <children>
       		<Label id="title" fx:id="title" alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="213.0" text="Title" wrapText="true">
-               <padding>
+               <VBox.margin>
                   <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-               </padding>
+               </VBox.margin>
             </Label>
             <AnchorPane prefHeight="0.0" prefWidth="233.0">
                <children>

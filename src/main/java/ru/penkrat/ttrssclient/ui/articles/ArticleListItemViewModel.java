@@ -3,6 +3,8 @@ package ru.penkrat.ttrssclient.ui.articles;
 import java.time.format.DateTimeFormatter;
 
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.beans.binding.IntegerBinding;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -31,6 +33,10 @@ public class ArticleListItemViewModel implements ViewModel {
 		unread.set(article.isUnread());
 		date.set(dtf.format(article.getUpdated()));
 		feedTitle.set(article.getFeedTitle().toUpperCase());
+	}
+
+	public IntegerBinding titleLengthProperty() {
+		return StringBinding.stringExpression(title).length();
 	}
 
 	public ObservableStringValue titleProperty() {

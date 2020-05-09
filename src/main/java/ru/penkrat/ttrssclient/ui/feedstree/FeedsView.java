@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.fxmisc.easybind.EasyBind;
-import org.fxmisc.easybind.Subscription;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
 import org.springframework.stereotype.Component;
@@ -27,6 +25,9 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import ru.penkrat.ttrssclient.binding.ListBindings;
+import ru.penkrat.ttrssclient.binding.PipeBinding;
+import ru.penkrat.ttrssclient.binding.Subscription;
 import ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem;
 import ru.penkrat.ttrssclient.domain.Feed;
 
@@ -84,10 +85,11 @@ public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 							.map(cat -> new TreeItem<CategoryFeedTreeItem>(cat))
 							.peek(treeItem -> {
 								if (!treeItem.getValue().isLeaf()) {
-									ObservableList<TreeItem<CategoryFeedTreeItem>> chItems = EasyBind.map(
+									ObservableList<TreeItem<CategoryFeedTreeItem>> chItems = ListBindings.map(
 											treeItem.getValue().getChildren(),
 											feed -> new TreeItem<>(feed, createIcon(feed)));
-									Subscription s = EasyBind.listBind(treeItem.getChildren(), chItems);
+
+									Subscription s = ListBindings.listBind(treeItem.getChildren(), chItems);
 									subs.add(s);
 								}
 							}).collect(Collectors.toList());
@@ -101,18 +103,20 @@ public class FeedsView implements FxmlView<FeedsViewModel>, Initializable {
 			}
 		});
 
-		viewModel.selectedCategoryOrFeedProperty()
-				.bind(EasyBind.monadic(treeView.getSelectionModel().selectedItemProperty()).map(TreeItem::getValue));
+		PipeBinding.of(treeView.getSelectionModel().selectedItemProperty())
+				.map(TreeItem::getValue)
+				.subscribe(viewModel.selectedCategoryOrFeedProperty());
 
-		EasyBind.subscribe(viewModel.selectedCategoryOrFeedProperty(), n -> {
-			TreeItem<CategoryFeedTreeItem> selected = findInTree(n, treeRoot);
-			if (selected != null) {
-				selected.setExpanded(true);
-				treeView.getSelectionModel().select(selected);
-			} else {
-				treeView.getSelectionModel().clearSelection();
-			}
-		});
+		PipeBinding.of(viewModel.selectedCategoryOrFeedProperty())
+				.subscribe(n -> {
+					TreeItem<CategoryFeedTreeItem> selected = findInTree(n, treeRoot);
+					if (selected != null) {
+						selected.setExpanded(true);
+						treeView.getSelectionModel().select(selected);
+					} else {
+						treeView.getSelectionModel().clearSelection();
+					}
+				});
 	}
 
 	private TreeItem<CategoryFeedTreeItem> findInTree(CategoryFeedTreeItem item, TreeItem<CategoryFeedTreeItem> root) {

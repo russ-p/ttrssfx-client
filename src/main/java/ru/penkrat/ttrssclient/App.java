@@ -2,7 +2,6 @@ package ru.penkrat.ttrssclient;
 
 import javax.inject.Inject;
 
-import org.fxmisc.easybind.EasyBind;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -13,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import ru.penkrat.ttrssclient.binding.PipeBinding;
 import ru.penkrat.ttrssclient.domain.Feed;
 import ru.penkrat.ttrssclient.ui.StylesManager;
 import ru.penkrat.ttrssclient.ui.feedstree.FeedScope;
@@ -34,11 +34,13 @@ public class App extends MvvmfxSpringApplication {
 
 	@Override
 	public void startMvvmfx(final Stage stage) throws Exception {
-		stage.titleProperty().bind(EasyBind.monadic(feedScope.selectedFeedProperty())
-				.map(Feed::getTitle)
-				.map(feedTitle -> "Tiny-Tiny RSS FX - " + feedTitle)
-				.orElse("Tiny-Tiny RSS FX"));
-
+		
+		PipeBinding.of(feedScope.selectedFeedProperty())
+			.map(Feed::getTitle)
+			.map(feedTitle -> "Tiny-Tiny RSS FX - " + feedTitle)
+			.orElse("Tiny-Tiny RSS FX")
+			.subscribe(stage.titleProperty());
+		
 		final Parent parent = FluentViewLoader.fxmlView(MainView.class).load().getView();
 
 		Scene scene = new Scene(parent);

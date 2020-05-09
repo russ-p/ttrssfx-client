@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.fxmisc.easybind.EasyBind;
 import org.springframework.stereotype.Component;
 
 import de.saxsys.mvvmfx.ViewModel;
@@ -14,6 +13,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
+import ru.penkrat.ttrssclient.binding.PipeBinding;
 import ru.penkrat.ttrssclient.domain.Category;
 import ru.penkrat.ttrssclient.domain.CategoryFeedTreeItem;
 import ru.penkrat.ttrssclient.domain.Feed;
@@ -51,17 +51,18 @@ public class FeedsViewModel implements ViewModel {
 			getSelectedCategoryOrFeed().getChildren().setAll(feeds);
 		});
 
-		EasyBind.subscribe(selectedCategoryOrFeed, categoryOrFeed -> {
-			if (categoryOrFeed instanceof Category) {
-				if (categoryOrFeed.getChildren().isEmpty()) {
-					loadFeedsService.restart(((Category) categoryOrFeed).getId());
-				}
-			} else if (categoryOrFeed instanceof Feed) {
-				if (categoryOrFeed.getChildren().isEmpty()) {
-					feedScope.setSelectedFeed((Feed) categoryOrFeed);
-				}
-			}
-		});
+		PipeBinding.of(selectedCategoryOrFeed)
+				.subscribe(categoryOrFeed -> {
+					if (categoryOrFeed instanceof Category) {
+						if (categoryOrFeed.getChildren().isEmpty()) {
+							loadFeedsService.restart(((Category) categoryOrFeed).getId());
+						}
+					} else if (categoryOrFeed instanceof Feed) {
+						if (categoryOrFeed.getChildren().isEmpty()) {
+							feedScope.setSelectedFeed((Feed) categoryOrFeed);
+						}
+					}
+				});
 
 		NotificationCenterFactory.getNotificationCenter().subscribe("UPDATE", (a, b) -> {
 			loadCategoriesService.restart();

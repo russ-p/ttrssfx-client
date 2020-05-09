@@ -2,16 +2,16 @@ package ru.penkrat.ttrssclient.ui.articleview;
 
 import javax.inject.Inject;
 
-import org.fxmisc.easybind.EasyBind;
-import org.fxmisc.easybind.Subscription;
 import org.springframework.stereotype.Component;
 
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.HostServices;
-import javafx.beans.binding.Binding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
+import ru.penkrat.ttrssclient.binding.PipeBinding;
+import ru.penkrat.ttrssclient.binding.Subscription;
 import ru.penkrat.ttrssclient.domain.Article;
 import ru.penkrat.ttrssclient.service.generic.FunctionService;
 import ru.penkrat.ttrssclient.ui.articles.ArticleScope;
@@ -19,7 +19,7 @@ import ru.penkrat.ttrssclient.ui.articles.ArticleScope;
 @Component
 public class ArticleViewModel implements ViewModel {
 
-	private final Binding<String> selectedArticleContent;
+	private final ObservableValue<String> selectedArticleContent;
 
 	private final StringProperty selectedArticleTitle = new SimpleStringProperty();
 
@@ -32,22 +32,23 @@ public class ArticleViewModel implements ViewModel {
 	private HostServices hostServices;
 
 	@Inject
-	public ArticleViewModel(TTRSSClient client, ArticleScope articleScope, HostServices hostServices, HtmlContentWrapper contentWrapper) {
+	public ArticleViewModel(TTRSSClient client, ArticleScope articleScope, HostServices hostServices,
+			HtmlContentWrapper contentWrapper) {
 		this.hostServices = hostServices;
-		
-		loadArticleContentService = new FunctionService<>(client::getContent);
-		selectedArticleContent = contentWrapper.bind(loadArticleContentService.valueProperty(), articleScope.selectedArticleProperty());
 
-		articleSelectionSubscription = EasyBind.subscribe(articleScope.selectedArticleProperty(), article -> {
-			if (article != null) {
-				loadArticleContentService.restart(article);
-				selectedArticleTitle.set(article.getTitle());
-				selectedArticleLink.set(article.getLink());
-			}
-		});
+		loadArticleContentService = new FunctionService<>(client::getContent);
+		selectedArticleContent = contentWrapper.bind(loadArticleContentService.valueProperty(),
+				articleScope.selectedArticleProperty());
+
+		articleSelectionSubscription = PipeBinding.of(articleScope.selectedArticleProperty())
+				.subscribe(article -> {
+					loadArticleContentService.restart(article);
+					selectedArticleTitle.set(article.getTitle());
+					selectedArticleLink.set(article.getLink());
+				});
 	}
 
-	public final Binding<String> selectedArticleContentProperty() {
+	public final ObservableValue<String> selectedArticleContentProperty() {
 		return this.selectedArticleContent;
 	}
 

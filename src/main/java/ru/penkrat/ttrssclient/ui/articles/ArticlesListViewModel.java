@@ -5,8 +5,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.fxmisc.easybind.EasyBind;
-import org.fxmisc.easybind.Subscription;
 import org.springframework.stereotype.Component;
 
 import de.saxsys.mvvmfx.ViewModel;
@@ -15,6 +13,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
+import ru.penkrat.ttrssclient.binding.PipeBinding;
+import ru.penkrat.ttrssclient.binding.Subscription;
 import ru.penkrat.ttrssclient.domain.Article;
 import ru.penkrat.ttrssclient.domain.Feed;
 import ru.penkrat.ttrssclient.service.generic.BiFunctionService;
@@ -36,9 +36,9 @@ public class ArticlesListViewModel implements ViewModel {
 
 	private ObjectProperty<Feed> selectedFeedProperty;
 
-	Subscription articleSelectionSubscription; //f*ck GC
+	Subscription articleSelectionSubscription; // f*ck GC
 
-	Subscription feedSubscription; //f*ck GC
+	Subscription feedSubscription; // f*ck GC
 
 	@Inject
 	public ArticlesListViewModel(TTRSSClient client, FeedScope feedScope, ArticleScope articleScope) {
@@ -60,26 +60,22 @@ public class ArticlesListViewModel implements ViewModel {
 			client.updateArticle(articleModel.getArticle().getId(), 0, 2);
 			articleModel.getArticle().setUnread(false);
 			articleModel.unreadProperty().set(false);
-		} , "Как прочитано", 1000);
+		}, "Как прочитано", 1000);
 		markAsReadService.setOnSucceeded(t -> {
 			// TODO:
 		});
 
-		feedSubscription = EasyBind.subscribe(selectedFeedProperty, feed -> {
-			if (feed != null) {
-				loadArticlesService.restart(feed.getId(), 0);
-			}
-		});
+		feedSubscription = PipeBinding.of(selectedFeedProperty)
+				.subscribe(feed -> loadArticlesService.restart(feed.getId(), 0));
 
-		articleSelectionSubscription = EasyBind.subscribe(selectedArticle, articleModel -> {
-			if (articleModel != null) {
-				articleScope.setSelectedArticle(articleModel.getArticle());
-				markAsReadService.restart(articleModel);
-				if (articles.indexOf(articleModel) + 1 >= articles.size()) {
-					preload();
-				}
-			}
-		});
+		articleSelectionSubscription = PipeBinding.of(selectedArticle)
+				.subscribe(articleModel -> {
+					articleScope.setSelectedArticle(articleModel.getArticle());
+					markAsReadService.restart(articleModel);
+					if (articles.indexOf(articleModel) + 1 >= articles.size()) {
+						preload();
+					}
+				});
 
 		articleScope.loadingListMessageProperty()
 				.bind(loadArticlesService.messageProperty().concat(loadAdditionalArticlesService.messageProperty()));

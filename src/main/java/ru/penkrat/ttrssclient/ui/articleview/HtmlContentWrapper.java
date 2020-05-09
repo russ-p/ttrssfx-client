@@ -7,15 +7,15 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.fxmisc.easybind.EasyBind;
 import org.springframework.stereotype.Component;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 
-import javafx.beans.binding.Binding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.value.ObservableValue;
+import ru.penkrat.ttrssclient.binding.tuples.TupleBindings;
 import ru.penkrat.ttrssclient.domain.Article;
 import ru.penkrat.ttrssclient.ui.settings.SettingsService;
 import ru.penkrat.ttrssclient.ui.settings.SettingsService.Font;
@@ -36,10 +36,14 @@ public class HtmlContentWrapper {
 		this.settings = settings;
 	}
 
-	public Binding<String> bind(ReadOnlyObjectProperty<String> contentProperty,
+	public ObservableValue<String> bind(ReadOnlyObjectProperty<String> contentProperty,
 			ObjectProperty<Article> articleProperty) {
-		return EasyBind.combine(contentProperty, settings.fontFamilyProperty(), settings.fontSizeProperty(),
-				articleProperty, settings.themeProperty(), this::generate);
+		return TupleBindings.of(contentProperty,
+				settings.fontFamilyProperty(),
+				settings.fontSizeProperty(),
+				articleProperty,
+				settings.themeProperty())
+				.reduce(this::generate);
 	}
 
 	private String generate(String content, Font fFamily, String fSize, Article article, String theme) {

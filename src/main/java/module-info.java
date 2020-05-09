@@ -33,8 +33,8 @@ open module ttrssclient {
 
 	requires com.github.russ_p.ico4jfx;
 	
-	requires easybind;
 	requires org.apache.commons.lang3;
+	requires lombok;
 	
 	exports ru.penkrat.ttrssclient;
 }
