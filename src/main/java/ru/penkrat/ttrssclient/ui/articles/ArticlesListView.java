@@ -1,6 +1,7 @@
 package ru.penkrat.ttrssclient.ui.articles;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.springframework.stereotype.Component;
@@ -16,8 +17,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.control.IndexedCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.skin.VirtualFlow;
 
 @Component
 public class ArticlesListView implements FxmlView<ArticlesListViewModel>, Initializable {
@@ -30,6 +33,10 @@ public class ArticlesListView implements FxmlView<ArticlesListViewModel>, Initia
 
 	private ScrollBar articleViewScrollBar;
 
+	private Optional<Integer> beforeFirstVisibleCellIndex = Optional.empty();
+
+	private VirtualFlow<?> virtualFlow;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		articleView.itemsProperty().setValue(viewModel.getArticles());
@@ -41,9 +48,15 @@ public class ArticlesListView implements FxmlView<ArticlesListViewModel>, Initia
 		articleView.setCellFactory(cellFactory);
 
 		viewModel.getArticles().addListener((ListChangeListener<ArticleListItemViewModel>) c -> {
-			initScrolls();
-			int index = articleView.getSelectionModel().getSelectedIndex();
-			articleView.scrollTo(index);
+			while (c.next() && c.wasAdded()) {
+				initScrolls();
+
+				if (c.getAddedSize() == c.getList().size()) {
+					articleView.scrollTo(0);
+				} else {
+					beforeFirstVisibleCellIndex.ifPresent(articleView::scrollTo);
+				}
+			}
 		});
 
 		NotificationCenterFactory.getNotificationCenter().subscribe("PREV_ARTICLE", (a, b) -> {
@@ -58,13 +71,26 @@ public class ArticlesListView implements FxmlView<ArticlesListViewModel>, Initia
 		if (articleViewScrollBar != null)
 			return;
 		articleViewScrollBar = getVerticalScrollbar(articleView);
+
 		articleViewScrollBar.valueProperty().addListener((ov, o, n) -> {
 			double value = n.doubleValue();
-			if (value == articleViewScrollBar.getMax()) {
-				articleViewScrollBar.setValue(95);
+			if (value + 0.02 >= articleViewScrollBar.getMax() && !viewModel.isPreloadRunning()) {
+				saveViewIndex();
 				viewModel.preload();
 			}
 		});
+
+		articleView.getChildrenUnmodifiable()
+				.stream()
+				.filter(node -> node instanceof VirtualFlow)
+				.map(node -> ((VirtualFlow<?>) node))
+				.findAny()
+				.ifPresent(virtualFlow -> this.virtualFlow = virtualFlow);
+	}
+
+	private void saveViewIndex() {
+		beforeFirstVisibleCellIndex = Optional.ofNullable(virtualFlow.getFirstVisibleCell())
+				.map(IndexedCell::getIndex);
 	}
 
 	private ScrollBar getVerticalScrollbar(Node table) {

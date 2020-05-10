@@ -12,6 +12,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Worker.State;
 import ru.penkrat.ttrssclient.api.TTRSSClient;
 import ru.penkrat.ttrssclient.binding.PipeBinding;
 import ru.penkrat.ttrssclient.binding.Subscription;
@@ -85,6 +86,10 @@ public class ArticlesListViewModel implements ViewModel {
 
 	public void preload() {
 		loadAdditionalArticlesService.restart(selectedFeedProperty.getValue().getId(), articles.size());
+	}
+
+	public boolean isPreloadRunning() {
+		return loadAdditionalArticlesService.getState().compareTo(State.RUNNING) == 0;
 	}
 
 	public ObservableList<ArticleListItemViewModel> getArticles() {
