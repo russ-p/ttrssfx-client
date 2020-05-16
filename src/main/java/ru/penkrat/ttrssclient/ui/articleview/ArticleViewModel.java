@@ -1,5 +1,7 @@
 package ru.penkrat.ttrssclient.ui.articleview;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
@@ -31,9 +33,11 @@ public class ArticleViewModel implements ViewModel {
 
 	private HostServices hostServices;
 
+	private FunctionService<String, Map.Entry<Integer, String>> ampSearcheService;
+
 	@Inject
 	public ArticleViewModel(TTRSSClient client, ArticleScope articleScope, HostServices hostServices,
-			HtmlContentWrapper contentWrapper) {
+			HtmlContentWrapper contentWrapper, AmpSearcher ampSearcher) {
 		this.hostServices = hostServices;
 
 		loadArticleContentService = new FunctionService<>(client::getContent);
@@ -46,6 +50,23 @@ public class ArticleViewModel implements ViewModel {
 					selectedArticleTitle.set(article.getTitle());
 					selectedArticleLink.set(article.getLink());
 				});
+
+		ampSearcheService = new FunctionService<>(link -> {
+			try {
+				return ampSearcher.findLink(link);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		});
+		ampSearcheService.setOnSucceeded(e -> {
+			final var result = ampSearcheService.getValue();
+			if (result.getKey() == 0) {
+				publish("open_url", result.getValue());
+			} else {
+				publish("set_content", result.getValue());
+			}
+		});
 	}
 
 	public final ObservableValue<String> selectedArticleContentProperty() {
@@ -61,7 +82,12 @@ public class ArticleViewModel implements ViewModel {
 	}
 
 	public void openInBrowser() {
-		if (selectedArticleLink.get() != null)
+		if (selectedArticleLink.get() != null) {
 			hostServices.showDocument(selectedArticleLink.get());
+		}
+	}
+
+	public void showAMP() {
+		ampSearcheService.restart(selectedArticleLink.get());
 	}
 }

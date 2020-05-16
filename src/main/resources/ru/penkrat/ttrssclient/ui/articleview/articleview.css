@@ -2,3 +2,9 @@
 	-fx-icon-code: "mdi-arrow-top-right";
 	-fx-icon-color: -fx-accent;
 }
+
+#amp .ikonli-font-icon {
+	-fx-icon-code: "mdi-eye";
+	-fx-icon-color: -fx-accent;
+	-fx-icon-size: 16px;
+}

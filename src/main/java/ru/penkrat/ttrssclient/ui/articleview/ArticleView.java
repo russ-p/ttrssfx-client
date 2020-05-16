@@ -24,6 +24,9 @@ public class ArticleView implements FxmlView<ArticleViewModel>, Initializable {
 	private Hyperlink link;
 
 	@FXML
+	private Hyperlink ampLink;
+
+	@FXML
 	private WebView webView;
 
 	@InjectViewModel
@@ -35,20 +38,44 @@ public class ArticleView implements FxmlView<ArticleViewModel>, Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		subscription = PipeBinding.of(viewModel.selectedArticleContentProperty())
 				.subscribe(webView.getEngine()::loadContent);
-		
+
 		link.textProperty().bind(viewModel.selectedArticleTitleProperty());
 		link.setVisited(false);
 		link.setGraphic(new FontIcon());
 		link.setContentDisplay(ContentDisplay.RIGHT);
 
+		ampLink.setText("");
+		ampLink.setGraphic(new FontIcon());
+		ampLink.setContentDisplay(ContentDisplay.RIGHT);
+
 		Tooltip tooltip = new Tooltip();
 		tooltip.textProperty().bind(viewModel.selectedArticleLinkProperty());
 		link.setTooltip(tooltip);
+
+		viewModel.subscribe("open_url", (msg, payload) -> {
+			final var url = (String) payload[0];
+			if (url == null || url.isBlank()) {
+				return;
+			}
+			webView.getEngine().load(url);
+		});
+		viewModel.subscribe("set_content", (msg, payload) -> {
+			final var content = (String) payload[0];
+			if (content == null || content.isBlank()) {
+				return;
+			}
+			webView.getEngine().loadContent(content);
+		});
 	}
 
 	@FXML
 	public void onOpenLink() {
 		viewModel.openInBrowser();
+	}
+
+	@FXML
+	public void onShowAMP() {
+		viewModel.showAMP();
 	}
 
 }
