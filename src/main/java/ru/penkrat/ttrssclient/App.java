@@ -47,8 +47,10 @@ public class App extends MvvmfxSpringApplication {
 		stage.setScene(scene);
 
 		Rectangle2D screenBounds = Screen.getPrimary().getBounds();
-		stage.setWidth(screenBounds.getWidth());
-		stage.setHeight(screenBounds.getHeight() - 50);
+		stage.setWidth(screenBounds.getWidth() * 2 / 3);
+		stage.setHeight(screenBounds.getHeight() - 24);
+		stage.setX(0);
+		stage.setY(0);
 		stage.show();
 	}
 
