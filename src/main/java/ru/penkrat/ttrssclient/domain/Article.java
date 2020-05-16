@@ -1,5 +1,7 @@
 package ru.penkrat.ttrssclient.domain;
 
+import static org.apache.commons.text.StringEscapeUtils.unescapeHtml4;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -23,9 +25,10 @@ public class Article {
 	public Article(JsonValue value) {
 		JsonObject obj = (JsonObject) value;
 
-		id = obj.get("id").getValueType() == ValueType.NUMBER ? obj.getInt("id") : Integer
-				.parseInt(obj.getString("id"));
-		title = obj.getString("title");
+		id = obj.get("id").getValueType() == ValueType.NUMBER ? obj.getInt("id")
+				: Integer
+						.parseInt(obj.getString("id"));
+		title = unescapeHtml4(obj.getString("title", ""));
 		unread = obj.getBoolean("unread", true);
 
 		updated = LocalDateTime.ofEpochSecond(Long.valueOf(obj.getInt("updated")), 0, ZoneOffset.ofHours(0));
@@ -34,7 +37,7 @@ public class Article {
 		setFeedTitle(obj.getString("feed_title"));
 		setFeedId(obj.getString("feed_id"));
 		setFlavorImage(obj.getString("flavor_image", ""));
-		setExcerpt(obj.getString("excerpt", ""));
+		setExcerpt(unescapeHtml4(obj.getString("excerpt", "")));
 	}
 
 	public String getContent() {

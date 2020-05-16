@@ -34,6 +34,7 @@ open module ttrssclient {
 	requires com.github.russ_p.ico4jfx;
 	
 	requires org.apache.commons.lang3;
+	requires org.apache.commons.text;
 	requires lombok;
 	
 	exports ru.penkrat.ttrssclient;
